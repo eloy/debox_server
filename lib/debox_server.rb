@@ -5,6 +5,7 @@ require "debox_server/version"
 require "debox_server/utils"
 require "debox_server/config"
 require "debox_server/users"
+require "debox_server/basic_auth"
 
 # TODO get root without the ../
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
@@ -17,7 +18,7 @@ module DeboxServer
   end
 
   class HTTP < Sinatra::Base
-
+    include DeboxServer::BasicAuth
 
     set :root, DEBOX_ROOT
 
@@ -42,20 +43,26 @@ module DeboxServer
       user[:api_key]
     end
 
-    namespace '/api' do
 
+    # API
+    #----------------------------------------------------------------------
+
+    # Require api_key
+    before '/api/*'  do
+      authenticate!
+    end
+
+    namespace '/api' do
       # Return a list with users in the system
       get '/users' do
         json users_config.keys
       end
 
       post '/users/create' do
-        p "Creating user"
         user = add_user params[:user], params[:password]
         throw(:halt, [400, "Unvalid request\n"]) unless user
         "ok"
       end
-
 
       # Deploy an app
       post "/deploy/:app" do

@@ -17,6 +17,13 @@ module DeboxServer
       return user_data
     end
 
+    def login_api_key(email, api_key)
+      user_data = users_config[email]
+      return false unless user_data && user_data[:api_key] == api_key
+      return user_data
+    end
+
+
     def add_user(email, password)
       users = users_config
       users[email] = { password: hash_str(password), api_key: generate_uuid }

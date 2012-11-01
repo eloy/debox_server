@@ -3,9 +3,16 @@ class FakeServer
 end
 
 
-def create_user(email)
-  FakeServer.new.add_user email, 'secret'
+def create_user(email='test@indeos.es')
+  user = FakeServer.new.add_user email, 'secret'
+  user[:email] = email
+  return user
 end
+
+def login_user(user=create_user)
+  authorize user[:email], user[:api_key]
+end
+
 
 def find_user(email)
   FakeServer.new.find_user email
