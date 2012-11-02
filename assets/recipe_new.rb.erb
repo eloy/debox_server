@@ -1,3 +1,5 @@
+load 'deploy'
+load 'deploy/assets'
 require 'bundler/capistrano'
 #
 # Capistrano configuration for <%= app %>
@@ -12,19 +14,19 @@ server "your_server", :web, :app, :db, primary: true
 # Application name
 set :application, "<%= app %>"
 
+# Your git repository
+set :scm, "git"
+set :repository, "git@github.com:your_github_username_user/<%=app %>.git"
+
+# Wich branch should be deployed by default
+set :branch, "master"
+
 # User for deploy
 set :user, "deployer"
 set :use_sudo, false # only enable if really required
 
 # Directory where to deploy the app
 set :deploy_to, "/home/#{user}/apps/#{application}"
-
-# Your git repository
-set :scm, "git"
-set :repository, "git@github.com:user/repo.git"
-
-# Wich brach should be deployed
-set :branch, "master"
 
 # Options bellow have safe defaults
 ssh_options[:user] = user
