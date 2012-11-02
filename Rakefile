@@ -27,4 +27,9 @@ namespace :auth do
     end
   end
 
+  desc 'Generate rsa key'
+  task :ssh_keygen do
+    system 'ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""'
+  end
+
 end
