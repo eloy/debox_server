@@ -2,6 +2,8 @@
 module DeboxServer
   module Users
     include DeboxServer::Utils
+    include DeboxServer::Config
+
     CONFIG_FILE = 'users.conf'
 
     def find_user(email)

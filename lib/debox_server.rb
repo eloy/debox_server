@@ -1,10 +1,14 @@
 require 'sinatra'
 require 'sinatra/namespace'
+require 'sinatra/json'
 require 'yaml'
+require 'fileutils'
+require 'erb'
 require "debox_server/version"
 require "debox_server/utils"
 require "debox_server/config"
 require "debox_server/users"
+require "debox_server/recipes"
 require "debox_server/basic_auth"
 
 # TODO get root without the ../
@@ -15,6 +19,7 @@ module DeboxServer
   module App
     include DeboxServer::Config
     include DeboxServer::Users
+    include DeboxServer::Recipes
   end
 
   class HTTP < Sinatra::Base
@@ -33,7 +38,7 @@ module DeboxServer
     end
 
     get "/" do
-      "debox #{config_dir}"
+      "debox"
     end
 
     # Return the api_key for the user
@@ -42,7 +47,6 @@ module DeboxServer
       throw(:halt, [401, "Not authorized\n"]) unless user
       user[:api_key]
     end
-
 
     # API
     #----------------------------------------------------------------------
@@ -58,11 +62,29 @@ module DeboxServer
         json users_config.keys
       end
 
+      # Users
+      #----------------------------------------------------------------------
+
       post '/users/create' do
         user = add_user params[:user], params[:password]
         throw(:halt, [400, "Unvalid request\n"]) unless user
         "ok"
       end
+
+      # receipes
+      #----------------------------------------------------------------------
+
+      get "/recipes/:app/:env/new" do
+        new_recipe params[:app], params[:env]
+      end
+
+      post "/recipes/:app/:env/create" do
+        create_recipe params[:app], params[:env], params[:content]
+        "ok"
+      end
+
+      # deploy
+      #----------------------------------------------------------------------
 
       # Deploy an app
       post "/deploy/:app" do

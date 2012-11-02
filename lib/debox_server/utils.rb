@@ -13,5 +13,13 @@ module DeboxServer
     def generate_uuid
       SecureRandom.uuid
     end
+
+    def save_file(name, content)
+      f = File.open(name, 'w')
+      f.write(content)
+      f.close
+      return true
+    end
+
   end
 end

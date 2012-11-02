@@ -1,0 +1,39 @@
+require 'bundler/capistrano'
+#
+# Capistrano configuration for <%= app %>
+#
+# **  <%= env.to_s.upcase %>  **
+#
+#===========================================================================
+
+# Servers and roles where to deploy the app in <%= env %>
+server "your_server", :web, :app, :db, primary: true
+
+# Application name
+set :application, "<%= app %>"
+
+# User for deploy
+set :user, "deployer"
+set :use_sudo, false # only enable if really required
+
+# Directory where to deploy the app
+set :deploy_to, "/home/#{user}/apps/#{application}"
+
+# Your git repository
+set :scm, "git"
+set :repository, "git@github.com:user/repo.git"
+
+# Wich brach should be deployed
+set :branch, "master"
+
+# Options bellow have safe defaults
+ssh_options[:user] = user
+set :deploy_via, :remote_cache
+default_run_options[:pty] = true
+ssh_options[:forward_agent] = true
+
+# Add callbacks for after deploy
+#---------------------------------------------------------------------------
+
+# keep only the last 5 releases
+after "deploy", "deploy:cleanup"
