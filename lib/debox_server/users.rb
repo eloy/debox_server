@@ -38,7 +38,6 @@ module DeboxServer
       return { } unless File.exists? users_config_file
       YAML.load_file users_config_file
     end
-
     private
 
     def users_config_file

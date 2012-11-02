@@ -27,6 +27,10 @@ module DeboxServer
     include DeboxServer::Deployer
   end
 
+  class Core
+    include DeboxServer::App
+  end
+
   class HTTP < Sinatra::Base
 
     set :root, DEBOX_ROOT
