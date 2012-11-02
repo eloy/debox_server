@@ -1,14 +1,18 @@
-require 'sinatra'
-require 'sinatra/namespace'
-require 'sinatra/json'
 require 'yaml'
 require 'fileutils'
 require 'erb'
+
+require 'sinatra/base'
+require 'sinatra/json'
+require 'sinatra/namespace'
+require "sinatra/streaming"
+
 require "debox_server/version"
 require "debox_server/utils"
 require "debox_server/config"
 require "debox_server/users"
 require "debox_server/recipes"
+require "debox_server/deployer"
 require "debox_server/basic_auth"
 
 # TODO get root without the ../
@@ -20,17 +24,21 @@ module DeboxServer
     include DeboxServer::Config
     include DeboxServer::Users
     include DeboxServer::Recipes
+    include DeboxServer::Deployer
   end
 
   class HTTP < Sinatra::Base
-    include DeboxServer::BasicAuth
 
     set :root, DEBOX_ROOT
 
     require 'rack'
     include DeboxServer::App
+    include DeboxServer::BasicAuth
+
     register Sinatra::Namespace
+    helpers Sinatra::Streaming
     helpers Sinatra::JSON
+
 
     # TODO auto reload please!!
     configure :development do
@@ -100,8 +108,19 @@ module DeboxServer
       #----------------------------------------------------------------------
 
       # Deploy an app
-      post "/deploy/:app" do
-        "Deploing #{params[:app]}"
+      get "/deploy/:app/:env" do
+        app = params[:app]
+        env = params[:env]
+        throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
+        stream do |out|
+          begin
+            deploy app, env, out
+          rescue Exception => error
+            out.puts "Ops, something went wrong."
+            out.puts error
+          end
+          out.flush
+        end
       end
 
     end

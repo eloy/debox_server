@@ -38,16 +38,16 @@ module DeboxServer
       File.exists? recipe_file_name(app, env)
     end
 
+    def recipe_file_name(app, env)
+      File.join recipes_app_dir(app), "#{env}.rb"
+    end
+
     private
 
     # Create required dirs if no present
     def prepare_dirs!(app)
       Dir.mkdir(recipes_dir) unless Dir.exists? recipes_dir
       Dir.mkdir(recipes_app_dir(app)) unless Dir.exists? recipes_app_dir(app)
-    end
-
-    def recipe_file_name(app, env)
-      File.join recipes_app_dir(app), "#{env}.rb"
     end
 
     def recipes_dir
@@ -57,7 +57,6 @@ module DeboxServer
     def recipes_app_dir(app)
       File.join recipes_dir, app
     end
-
 
     def recipe_template
       @recipe_template ||= recipe_template_content
