@@ -53,13 +53,21 @@ describe DeboxServer::Recipes do
 
   end
 
-
   describe 'DeboxServer::Recipes#new_recipe' do
     it 'should return a new recipe with defaults vaules' do
       server = FakeServer.new
       content = server.new_recipe app, :production
       content.should match app
       content.should match 'PRODUCTION'
+    end
+  end
+
+
+  describe 'DeboxServer::Recipes#recipe_content' do
+    it 'should return a new recipe with defaults vaules' do
+      server = FakeServer.new
+      server.create_recipe(app, :production, content)
+      server.recipe_content(app, :production).should eq content
     end
   end
 

@@ -79,7 +79,20 @@ module DeboxServer
       end
 
       post "/recipes/:app/:env/create" do
-        create_recipe params[:app], params[:env], params[:content]
+        s = create_recipe params[:app], params[:env], params[:content]
+        throw(:halt, [400, "Unvalid request\n"]) unless s
+        "ok"
+      end
+
+      get "/recipes/:app/:env/show" do
+        recipe = recipe_content params[:app], params[:env]
+        throw(:halt, [400, "Unvalid request\n"]) unless recipe
+        recipe
+      end
+
+      post "/recipes/:app/:env/update" do
+        s = update_recipe params[:app], params[:env], params[:content]
+        throw(:halt, [400, "Unvalid request\n"]) unless s
         "ok"
       end
 
