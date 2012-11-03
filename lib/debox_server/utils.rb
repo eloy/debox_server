@@ -1,7 +1,12 @@
 require 'digest/md5'
 module DeboxServer
 
+  def self.environment
+    ENV['RACK_ENV'] ? ENV['RACK_ENV'].to_sym : :development
+  end
+
   module Utils
+
     def hash_str(str)
       Digest::MD5.hexdigest str
     end
@@ -12,13 +17,6 @@ module DeboxServer
 
     def generate_uuid
       SecureRandom.uuid
-    end
-
-    def save_file(name, content)
-      f = File.open(name, 'w')
-      f.write(content)
-      f.close
-      return true
     end
 
   end

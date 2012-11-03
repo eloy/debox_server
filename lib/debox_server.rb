@@ -1,4 +1,4 @@
-require 'yaml'
+require 'json'
 require 'fileutils'
 require 'erb'
 
@@ -15,13 +15,19 @@ require "debox_server/recipes"
 require "debox_server/deployer"
 require "debox_server/basic_auth"
 
+# Only redis backend for now
+require 'debox_server/redis'
+
 # TODO get root without the ../
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
+
 
 module DeboxServer
 
   module App
+    include DeboxServer::Utils
     include DeboxServer::Config
+    include DeboxServer::RedisDB
     include DeboxServer::Users
     include DeboxServer::Recipes
     include DeboxServer::Deployer
@@ -32,7 +38,6 @@ module DeboxServer
   end
 
   class HTTP < Sinatra::Base
-
     set :root, DEBOX_ROOT
 
     require 'rack'
@@ -57,7 +62,7 @@ module DeboxServer
     post "/api_key" do
       user = login_user(params[:user], params[:password])
       throw(:halt, [401, "Not authorized\n"]) unless user
-      user[:api_key]
+      user.api_key
     end
 
     # API
@@ -103,8 +108,7 @@ module DeboxServer
       end
 
       post "/recipes/:app/:env/update" do
-        s = update_recipe params[:app], params[:env], params[:content]
-        throw(:halt, [400, "Unvalid request\n"]) unless s
+        update_recipe params[:app], params[:env], params[:content]
         "ok"
       end
 

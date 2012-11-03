@@ -13,7 +13,7 @@ describe '/api_key' do
     user = create_user 'test@debox.com'
     post '/api_key', user: 'test@debox.com', password: 'secret'
     last_response.should be_ok
-    last_response.body.should eq user[:api_key]
+    last_response.body.should eq user.api_key
   end
 
 end

@@ -3,11 +3,27 @@ require 'spec_helper'
 describe 'DeboxServer::Users#add_users' do
   it 'should add a user to the db' do
     app = FakeServer.new
-    app.add_user('test@indeos.es', 'password')
-    user_data = app.users_config['test@indeos.es']
-    user_data[:password].should eq hash_str 'password'
+    user_data = app.add_user('test@indeos.es', 'password')
+    user_data.password.should eq hash_str 'password'
   end
 end
+
+
+
+
+describe 'DeboxServer::Users#find_user' do
+  it 'should find a user by email if exists' do
+    app = FakeServer.new
+    user_data = app.add_user('test@indeos.es', 'password')
+    found = app.find_user('test@indeos.es')
+    found.should_not be_false
+    found.email.should eq 'test@indeos.es'
+    found.password.should eq hash_str 'password'
+  end
+end
+
+
+
 
 describe 'DeboxServer::Users#users_config' do
   it 'should return an empty object if empty' do
@@ -28,6 +44,6 @@ describe 'DeboxServer::Users#login_user' do
     app.add_user('test@indeos.es', 'password')
     data = app.login_user('test@indeos.es', 'password')
     data.should_not be_false
-    data[:password].should eq hash_str 'password'
+    data.password.should eq hash_str 'password'
   end
 end
