@@ -5,6 +5,7 @@ gem 'sinatra-contrib'
 gem 'thin'
 gem 'json'
 gem 'capistrano'
+gem 'redis'
 
 group :test do
   gem 'rspec'

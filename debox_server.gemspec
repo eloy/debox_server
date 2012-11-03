@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'thin'
   gem.add_runtime_dependency 'json'
   gem.add_runtime_dependency 'capistrano'
+  gem.add_runtime_dependency 'redis'
 
   # Development dependencies
   gem.add_development_dependency 'rspec'
