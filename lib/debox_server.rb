@@ -10,6 +10,7 @@ require "sinatra/streaming"
 require "debox_server/version"
 require "debox_server/utils"
 require "debox_server/config"
+require "debox_server/ssh_keys"
 require "debox_server/users"
 require "debox_server/recipes"
 require "debox_server/deployer"
@@ -28,6 +29,7 @@ module DeboxServer
     include DeboxServer::Utils
     include DeboxServer::Config
     include DeboxServer::RedisDB
+    include DeboxServer::SshKeys
     include DeboxServer::Users
     include DeboxServer::Recipes
     include DeboxServer::Deployer
@@ -74,13 +76,14 @@ module DeboxServer
     end
 
     namespace '/api' do
+
+      # Users
+      #----------------------------------------------------------------------
+
       # Return a list with users in the system
       get '/users' do
         json users_config.keys
       end
-
-      # Users
-      #----------------------------------------------------------------------
 
       post '/users/create' do
         user = add_user params[:user], params[:password]
@@ -131,6 +134,11 @@ module DeboxServer
         end
       end
 
+      # SSH keys
+      #----------------------------------------------------------------------
+      get "/public_key" do
+        ssh_public_key || "SSH keys not found"
+      end
     end
   end
 

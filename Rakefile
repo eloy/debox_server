@@ -30,6 +30,22 @@ namespace :auth do
   desc 'Generate rsa key'
   task :ssh_keygen do
     system 'ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""'
+    Rake.application['auth:ssh_keys_import'].invoke
+  end
+
+  desc 'Import ssh key'
+  task :ssh_keys_import do
+    dbox = DeboxServer::Core.new
+    dbox.ssh_keys_import
+    STDOUT.puts "\nKeys imported."
+  end
+
+
+  desc 'Export ssh key. WARNING, it will overwrite system keys'
+  task :ssh_keys_export do
+    dbox = DeboxServer::Core.new
+    dbox.ssh_keys_export
+    STDOUT.puts "\nKeys exported."
   end
 
 end
