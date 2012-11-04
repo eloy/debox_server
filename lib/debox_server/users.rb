@@ -31,6 +31,7 @@ module DeboxServer
     def add_user(email, password)
       user = { email: email, password: hash_str(password), api_key: generate_uuid }
       redis.hsetnx 'users', email, user.to_json
+      redis.save
       return OpenStruct.new user
     end
 
