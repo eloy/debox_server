@@ -27,6 +27,7 @@ module DeboxServer
       public = REDIS.hget 'ssh_keys', :public_key
       private = REDIS.hget 'ssh_keys', :private_key
       return false if public.empty? || private.empty?
+      Dir.new(SSH_DIR) unless Dir.exists? SSH_DIR
       save_file PRIVATE_KEY, private
       save_file PUBLIC_KEY, public
       FileUtils.chmod 0600, PRIVATE_KEY
