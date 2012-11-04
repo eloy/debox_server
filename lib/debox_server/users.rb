@@ -35,6 +35,16 @@ module DeboxServer
       return OpenStruct.new user
     end
 
+    def users_destroy(email)
+      redis.hdel 'users', email
+      redis_save
+    end
+
+    def users_list
+      users_config.keys
+    end
+
+
     # Return the content of the users config file
     def users_config
       redis.hgetall('users') || {}

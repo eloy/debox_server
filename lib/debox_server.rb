@@ -92,6 +92,12 @@ module DeboxServer
         "ok"
       end
 
+      post '/users/destroy' do
+        throw(:halt, [400, "Unvalid request\n"]) unless params[:user]
+        users_destroy params[:user]
+        "ok"
+      end
+
       # apps
       #----------------------------------------------------------------------
 
@@ -122,6 +128,16 @@ module DeboxServer
         update_recipe params[:app], params[:env], params[:content]
         "ok"
       end
+
+      post "/recipes/:app/:env/destroy" do
+        recipes_destroy params[:app], params[:env]
+        "ok"
+      end
+
+      get "/recipes/:app" do
+        json recipes_list(params[:app])
+      end
+
 
       # deploy
       #----------------------------------------------------------------------

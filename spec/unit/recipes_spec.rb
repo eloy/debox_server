@@ -75,4 +75,13 @@ describe DeboxServer::Recipes do
     end
   end
 
+  describe 'DeboxServer::Recipes#recipes_destroy' do
+    it 'should destroy the recipe if exists' do
+      server = FakeServer.new
+      server.create_recipe('test', :staging, 'sample content')
+      server.create_recipe('test', :production, 'sample content')
+      server.recipes_destroy('test', 'staging')
+      server.recipes_list('test').should eq ['production']
+    end
+  end
 end

@@ -26,6 +26,11 @@ module DeboxServer
       recipe.result binding
     end
 
+    def recipes_destroy(app, env)
+      redis.hdel recipe_app_key(app), env
+      redis_save
+    end
+
     # Return true if one recipe for the given app and env
     # exits
     def recipe_exists?(app, env)
@@ -35,6 +40,10 @@ module DeboxServer
     # Return the recipe content
     def recipe_content(app, env)
       redis.hget(recipe_app_key(app), env) || false
+    end
+
+    def recipes_list(app)
+      redis.hkeys recipe_app_key(app)
     end
 
     def recipe_app_key(app)
