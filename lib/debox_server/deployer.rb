@@ -7,9 +7,8 @@ module DeboxServer
 
     def deploy(app, env, out)
       config = new_capistrano_config out
-      # Load the recipe file
-      recipe = recipe_file_name app, env
-      config.load recipe
+      # Load the recipe content
+      config.load string: recipe_content(app, env)
       config.find_and_execute_task('deploy', before: :start, after: :finish)
     end
 
@@ -18,8 +17,8 @@ module DeboxServer
     def new_capistrano_config(out)
       config = Capistrano::Configuration.new output: out
       # config.logger.level = Capistrano::Logger::IMPORTANT
-      config.logger.level = Capistrano::Logger::INFO
-      # config.logger.level = Capistrano::Logger::DEBUG
+      # config.logger.level = Capistrano::Logger::INFO
+      config.logger.level = Capistrano::Logger::DEBUG
 
       return config
     end
