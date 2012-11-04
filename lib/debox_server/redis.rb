@@ -4,6 +4,7 @@ module DeboxServer
   module RedisDB
 
     REDIS_URL_PARAM = ENV['REDIS_URL_PARAM'] || 'REDIS_URL'
+
     def self.new_redis_server
       if url_param = ENV[REDIS_URL_PARAM]
         uri = URI.parse(url_param)
@@ -20,9 +21,13 @@ module DeboxServer
     end
 
     def redis
-      # REDIS.select DeboxServer::RedisDB::redis_db_no
       return REDIS
     end
+
+    def redis_save
+      redis.save == 'OK' ? true : false
+    end
+
 
   end
 end

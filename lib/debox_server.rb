@@ -7,17 +7,17 @@ require 'sinatra/json'
 require 'sinatra/namespace'
 require "sinatra/streaming"
 
+
 require "debox_server/version"
-require "debox_server/utils"
 require "debox_server/config"
+require "debox_server/utils"
+require 'debox_server/redis'
 require "debox_server/ssh_keys"
+require "debox_server/apps"
 require "debox_server/users"
 require "debox_server/recipes"
 require "debox_server/deployer"
 require "debox_server/basic_auth"
-
-# Only redis backend for now
-require 'debox_server/redis'
 
 # TODO get root without the ../
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
@@ -30,6 +30,7 @@ module DeboxServer
     include DeboxServer::Config
     include DeboxServer::RedisDB
     include DeboxServer::SshKeys
+    include DeboxServer::Apps
     include DeboxServer::Users
     include DeboxServer::Recipes
     include DeboxServer::Deployer

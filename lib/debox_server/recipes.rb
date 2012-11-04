@@ -6,15 +6,18 @@ module DeboxServer
 
     # Create a new recipe
     def create_recipe(app, env, content)
+      return false if recipe_exists? app, env
       redis.hsetnx recipe_app_key(app), env, content
-      redis.save
+      # Add app if no present
+      apps_create app
+      redis_save
     end
 
     # Update recipe if present
     def update_recipe(app, env, content)
       return false unless recipe_exists? app, env
       redis.hset recipe_app_key(app), env, content
-      redis.save
+      redis_save
     end
 
     # Create recipe if not present
