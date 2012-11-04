@@ -4,8 +4,8 @@ require File.expand_path('../lib/debox_server/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Eloy Gomez"]
   gem.email         = ["eloy@indeos.es"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = "Centralized recipes manager for capistrano"
+  gem.summary       = "Debox allow centralized recipes and secure deploy"
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
