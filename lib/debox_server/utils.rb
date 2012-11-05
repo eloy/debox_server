@@ -19,12 +19,15 @@ module DeboxServer
       SecureRandom.uuid
     end
 
-    def save_file(path, content)
+    def self.save_file(path, content)
       f = File.new path, 'w'
       f.write content
       f.close
     end
 
+    def save_file(path, content)
+      DeboxServer::Utils.save_file path, content
+    end
 
   end
 end

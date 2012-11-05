@@ -52,7 +52,7 @@ module DeboxServer
     configure :production do
       # Ensure ssh keys presents if configured
       if ENV['DEBOX_MANAGE_SSH_KEYS']
-        ssh_keys_export unless ssh_keys_presents?
+        DeboxServer::SshKeys.ssh_keys_export unless DeboxServer::SshKeys.ssh_keys_presents?
       end
     end
 

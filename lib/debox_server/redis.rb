@@ -3,7 +3,7 @@ require 'redis'
 module DeboxServer
   module RedisDB
 
-    REDIS_URL_PARAM = ENV['REDIS_URL_PARAM'] || 'REDIS_URL'
+    REDIS_URL_PARAM = ENV['REDIS_URL_PARAM'] || 'Redis_URL'
 
     def self.new_redis_server
       if url_param = ENV[REDIS_URL_PARAM]
@@ -27,7 +27,6 @@ module DeboxServer
     def redis_save
       redis.save == 'OK' ? true : false
     end
-
 
   end
 end
