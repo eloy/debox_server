@@ -49,13 +49,6 @@ module DeboxServer
     helpers Sinatra::Streaming
     helpers Sinatra::JSON
 
-    configure :production do
-      # Ensure ssh keys presents if configured
-      if ENV['DEBOX_MANAGE_SSH_KEYS']
-        DeboxServer::SshKeys.ssh_keys_export unless DeboxServer::SshKeys.ssh_keys_presents?
-      end
-    end
-
     get "/" do
       "debox"
     end

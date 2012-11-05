@@ -8,11 +8,40 @@ module DeboxServer
     PRIVATE_KEY = File.join SSH_DIR, 'id_rsa'
 
     def ssh_public_key
-      REDIS.hget 'ssh_keys', :public_key
+      @@public_key ||= read_ssh_public_key
     end
 
     # Rake helpers
     #----------------------------------------------------------------------
+
+    # Ensure public and private keys availables in the system
+    def self.init_ssh_subsystem
+      return true if ssh_keys_presents?
+      public = REDIS.hget 'ssh_keys', :public_key
+      private = REDIS.hget 'ssh_keys', :private_key
+      if public.empty? || private.empty?
+        # Generate keys if not present
+        ssh_keygen
+        ssh_keys_import
+      else
+        # Else, export current keys
+        ssh_keys_export
+      end
+    end
+
+    def self.ssh_keygen
+      return true if ssh_keys_presents?
+      prepare_ssh_dir
+      system 'ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""'
+    end
+
+    def self.ssh_keys_presents?
+      File.exists?(PUBLIC_KEY) || File.exists?(PRIVATE_KEY)
+    end
+
+    def self.prepare_ssh_dir
+      Dir.mkdir(SSH_DIR) unless Dir.exists? SSH_DIR
+    end
 
     def self.ssh_keys_import
       return false unless ssh_keys_presents?
@@ -20,14 +49,6 @@ module DeboxServer
       private = File.open(PRIVATE_KEY).read
       REDIS.hset 'ssh_keys', :public_key, public
       REDIS.hset 'ssh_keys', :private_key,  private
-    end
-
-    def self.ssh_keys_presents?
-      File.exists?(PUBLIC_KEY) && File.exists?(PRIVATE_KEY)
-    end
-
-    def self.prepare_ssh_dir
-      Dir.mkdir(SSH_DIR) unless Dir.exists? SSH_DIR
     end
 
     def self.ssh_keys_export
@@ -42,5 +63,10 @@ module DeboxServer
       FileUtils.chmod 0600, PUBLIC_KEY
     end
 
+    private
+    def read_ssh_public_key
+      raise 'RSA public key not present.' unless SshKeys::ssh_keys_presents?
+      File.open(PUBLIC_KEY).read
+    end
   end
 end

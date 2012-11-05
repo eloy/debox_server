@@ -1,9 +1,9 @@
 require 'rake'
 
-namespace 'auth' do
+# User management
+#----------------------------------------------------------------------
 
-  # User management
-  #----------------------------------------------------------------------
+namespace 'auth' do
 
   desc 'create a user'
   task :user_create do
@@ -27,25 +27,31 @@ namespace 'auth' do
       STDOUT.puts user
     end
   end
+end
 
-  # ssh keys management
-  #----------------------------------------------------------------------
+# ssh keys management
+#----------------------------------------------------------------------
+
+namespace 'ssh' do
+
+  desc 'Initialize ssh subsystem'
+  task :init_subsystem do
+    DeboxServer::SshKeys.init_ssh_subsystem
+  end
 
   desc 'Generate rsa key'
-  task :ssh_keygen do
-
-    DeboxServer::SshKeys.prepare_ssh_dir
-    system 'ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""'
+  task :keygen do
+    DeboxServer::SshKeys.ssh_keygen
   end
 
   desc 'Import ssh key'
-  task :ssh_keys_import do
+  task :keys_import do
     DeboxServer::SshKeys.ssh_keys_import
     STDOUT.puts "\nKeys imported."
   end
 
   desc 'Export ssh key. WARNING, it will overwrite system keys'
-  task :ssh_keys_export do
+  task :keys_export do
     DeboxServer::SshKeys.ssh_keys_export
     STDOUT.puts "\nKeys exported."
   end
