@@ -28,12 +28,12 @@ namespace 'auth' do
     end
   end
 
-
   # ssh keys management
   #----------------------------------------------------------------------
 
   desc 'Generate rsa key'
   task :ssh_keygen do
+    Dir.mkdir('~/.ssh') unless Dir.exists? '~/.ssh'
     system 'ssh-keygen -t rsa -f ~/.ssh/id_rsa -N ""'
   end
 

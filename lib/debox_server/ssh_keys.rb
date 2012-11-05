@@ -15,19 +15,23 @@ module DeboxServer
     #----------------------------------------------------------------------
 
     def ssh_keys_import
-      return false unless File.exists? PUBLIC_KEY
-      return false unless File.exists? PRIVATE_KEY
+      return false unless ssh_keys_presents?
       public = File.open(PUBLIC_KEY).read
       private = File.open(PRIVATE_KEY).read
       REDIS.hset 'ssh_keys', :public_key, public
       REDIS.hset 'ssh_keys', :private_key,  private
     end
 
+    def ssh_keys_presents?
+      File.exists?(PUBLIC_KEY) && File.exists?(PRIVATE_KEY)
+    end
+
     def ssh_keys_export
+      raise ' SSH keys already present' if ssh_keys_presents?
       public = REDIS.hget 'ssh_keys', :public_key
       private = REDIS.hget 'ssh_keys', :private_key
       return false if public.empty? || private.empty?
-      Dir.new(SSH_DIR) unless Dir.exists? SSH_DIR
+      Dir.mkdir(SSH_DIR) unless Dir.exists? SSH_DIR
       save_file PRIVATE_KEY, private
       save_file PUBLIC_KEY, public
       FileUtils.chmod 0600, PRIVATE_KEY
