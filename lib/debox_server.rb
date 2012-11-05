@@ -7,7 +7,6 @@ require 'sinatra/json'
 require 'sinatra/namespace'
 require "sinatra/streaming"
 
-
 require "debox_server/version"
 require "debox_server/config"
 require "debox_server/utils"
@@ -21,7 +20,6 @@ require "debox_server/basic_auth"
 
 # TODO get root without the ../
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
-
 
 module DeboxServer
 
@@ -143,13 +141,15 @@ module DeboxServer
       #----------------------------------------------------------------------
 
       # Deploy an app
-      get "/deploy/:app/:env" do
+      get "/deploy/:app/:env/?:task?" do
         app = params[:app]
         env = params[:env]
+        task = params[:task] || 'deploy'
+
         throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
         stream do |out|
           begin
-            deploy app, env, out
+            deploy out, app, env, task
           rescue Exception => error
             out.puts "Ops, something went wrong."
             out.puts error

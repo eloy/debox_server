@@ -5,11 +5,11 @@ module DeboxServer
   module Deployer
     include DeboxServer::Recipes
 
-    def deploy(app, env, out)
+    def deploy(out, app, env, task)
       config = new_capistrano_config out
       # Load the recipe content
       config.load string: recipe_content(app, env)
-      config.find_and_execute_task('deploy', before: :start, after: :finish)
+      config.find_and_execute_task(task, before: :start, after: :finish)
     end
 
     private
