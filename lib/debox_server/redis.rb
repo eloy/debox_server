@@ -3,17 +3,20 @@ require 'redis'
 module DeboxServer
   module RedisDB
 
-    REDIS_URL_PARAM = ENV['REDIS_URL_PARAM'] || 'Redis_URL'
+    REDIS_URL_PARAM = 'REDIS_URL'
 
     def self.new_redis_server
-      if url_param = ENV[REDIS_URL_PARAM]
-        uri = URI.parse(url_param)
-        params = { host: uri.host, port: uri.port, password: uri.password}
-      end
-
-      redis_db = Redis.new(params || {})
+      redis_db = Redis.new connection_params
       redis_db.select redis_db_no
       return redis_db
+    end
+
+    def self.connection_params
+      if url_param = ENV[REDIS_URL_PARAM]
+        uri = URI.parse(url_param)
+        return { host: uri.host, port: uri.port, password: uri.password }
+      end
+      return { }
     end
 
     def self.redis_db_no
