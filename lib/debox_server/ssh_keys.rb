@@ -17,9 +17,10 @@ module DeboxServer
     # Ensure public and private keys availables in the system
     def self.init_ssh_subsystem
       return true if ssh_keys_presents?
+      RedisDB::check_redis_connection!
       public = REDIS.hget 'ssh_keys', :public_key
       private = REDIS.hget 'ssh_keys', :private_key
-      if public.empty? || private.empty?
+      if public.nil? || public.empty? || private.nil? || private.empty?
         # Generate keys if not present
         ssh_keygen
         ssh_keys_import
