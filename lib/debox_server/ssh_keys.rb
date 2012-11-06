@@ -27,6 +27,7 @@ module DeboxServer
         # Else, export current keys
         ssh_keys_export
       end
+      puts "SSH subsystem ready"
     end
 
     def self.ssh_keygen
@@ -44,7 +45,8 @@ module DeboxServer
     end
 
     def self.ssh_keys_import
-      return false unless ssh_keys_presents?
+      raise "Can't find ssh keys" unless ssh_keys_presents?
+      RedisDB::check_redis_connection!
       public = File.open(PUBLIC_KEY).read
       private = File.open(PRIVATE_KEY).read
       REDIS.hset 'ssh_keys', :public_key, public
@@ -52,10 +54,13 @@ module DeboxServer
     end
 
     def self.ssh_keys_export
-      raise ' SSH keys already present' if ssh_keys_presents?
+      raise 'SSH keys already present' if ssh_keys_presents?
+      RedisDB::check_redis_connection!
       public = REDIS.hget 'ssh_keys', :public_key
       private = REDIS.hget 'ssh_keys', :private_key
-      return false if public.empty? || private.empty?
+      if public.nil? || public.empty? || private.nil? || private.empty?
+        raise 'SSH keys not found'
+      end
       prepare_ssh_dir
       DeboxServer::Utils.save_file PRIVATE_KEY, private
       DeboxServer::Utils.save_file PUBLIC_KEY, public
