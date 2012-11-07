@@ -16,6 +16,7 @@ require "debox_server/apps"
 require "debox_server/users"
 require "debox_server/recipes"
 require "debox_server/deployer"
+require "debox_server/deploy_logs"
 require "debox_server/basic_auth"
 
 # TODO get root without the ../
@@ -32,6 +33,7 @@ module DeboxServer
     include DeboxServer::Users
     include DeboxServer::Recipes
     include DeboxServer::Deployer
+    include DeboxServer::DeployLogs
   end
 
   class Core
@@ -142,15 +144,29 @@ module DeboxServer
 
         throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
         stream do |out|
-          begin
-            deploy out, app, env, task
-          rescue Exception => error
-            out.puts "Ops, something went wrong."
-            out.puts error
-          end
+          #begin
+            result = deploy out, app, env, task
+            out.puts result
+          #rescue Exception => error
+          #  out.puts "Ops, something went wrong."
+          #  out.puts error
+          #end
           out.flush
         end
       end
+
+      # logs
+      #----------------------------------------------------------------------
+
+      get "/logs/:app/:env" do
+        json deployer_logs params[:app], params[:env]
+      end
+
+      get "/logs/:app/:env/:index" do
+        index = params[:index] == 'last' ? 0 : params[:index]
+        json deployer_logs_at params[:app], params[:env], index
+      end
+
 
       # SSH keys
       #----------------------------------------------------------------------
