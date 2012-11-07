@@ -6,6 +6,7 @@ gem 'thin'
 gem 'json'
 gem 'capistrano'
 gem 'redis'
+gem 'log4r'
 
 group :development do
   gem 'pry'
