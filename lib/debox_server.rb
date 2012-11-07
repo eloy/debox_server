@@ -8,6 +8,7 @@ require 'sinatra/namespace'
 require "sinatra/streaming"
 
 require "debox_server/version"
+require "debox_server/logger"
 require "debox_server/config"
 require "debox_server/utils"
 require 'debox_server/redis'
@@ -15,8 +16,8 @@ require "debox_server/ssh_keys"
 require "debox_server/apps"
 require "debox_server/users"
 require "debox_server/recipes"
-require "debox_server/deployer"
 require "debox_server/deploy_logs"
+require "debox_server/deployer"
 require "debox_server/basic_auth"
 
 # TODO get root without the ../
@@ -32,8 +33,8 @@ module DeboxServer
     include DeboxServer::Apps
     include DeboxServer::Users
     include DeboxServer::Recipes
-    include DeboxServer::Deployer
     include DeboxServer::DeployLogs
+    include DeboxServer::Deployer
   end
 
   class Core
@@ -141,18 +142,13 @@ module DeboxServer
         app = params[:app]
         env = params[:env]
         task = params[:task] || 'deploy'
-
+        job = schedule_deploy_job(app, env, task)
         throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
-        stream do |out|
-          #begin
-            result = deploy out, app, env, task
-            out.puts result
-          #rescue Exception => error
-          #  out.puts "Ops, something went wrong."
-          #  out.puts error
-          #end
-          out.flush
-        end
+
+        "Schedule as #{job.id}"
+        # stream do |out|
+        #   out.flush
+        # end
       end
 
       # logs

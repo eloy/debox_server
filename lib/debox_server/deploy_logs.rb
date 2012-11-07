@@ -52,15 +52,13 @@ module DeboxServer
   class OutputMultiplexer
     attr_reader :buffer, :time, :result, :success
 
-    def initialize(std_output)
-      @std_output = std_output
+    def initialize
       @time = DateTime.now
       @buffer = ''
     end
 
     def puts(msg)
       @buffer += msg
-      @std_output.puts msg
     end
 
     def result=(result)
