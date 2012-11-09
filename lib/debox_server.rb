@@ -142,17 +142,31 @@ module DeboxServer
         app = params[:app]
         env = params[:env]
         task = params[:task] || 'deploy'
-        job = schedule_deploy_job(app, env, task)
         throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
-
-        "Schedule as #{job.id}"
-        # stream do |out|
-        #   out.flush
-        # end
+        job = schedule_deploy_job(app, env, task)
+        json job_id: job.id , status: 'todo'
       end
 
       # logs
       #----------------------------------------------------------------------
+
+      get "/live_log/:app/:env/?:job_id?" do
+        stream do |out|
+          job = DeboxServer::Deployer::running_job params[:app], params[:env]
+          if params[:job_id].nil? || params[:job_id] == job.id
+            out.puts "Living log for #{job.id}:"
+            out.puts job.buffer # Show current buffer
+            sid = job.subscribe out
+            out.callback { job.unsubscribe(sid) }
+            out.errback { job.unsubscribe(sid) }
+            while job.running?
+            end
+          else
+            out.puts "Not running"
+            out.flush
+          end
+        end
+      end
 
       get "/logs/:app/:env" do
         json deployer_logs params[:app], params[:env]
@@ -162,7 +176,6 @@ module DeboxServer
         index = params[:index] == 'last' ? 0 : params[:index]
         json deployer_logs_at params[:app], params[:env], index
       end
-
 
       # SSH keys
       #----------------------------------------------------------------------
