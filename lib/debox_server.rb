@@ -169,12 +169,17 @@ module DeboxServer
       end
 
       get "/logs/:app/:env" do
-        json deployer_logs params[:app], params[:env]
+        logs = deployer_logs params[:app], params[:env]
+        out = logs.map do |l|
+          { status: l[:status], task: l[:task], time: l[:time], error: l[:error] }
+        end
+        json out
       end
 
       get "/logs/:app/:env/:index" do
         index = params[:index] == 'last' ? 0 : params[:index]
-        json deployer_logs_at params[:app], params[:env], index
+        log = deployer_logs_at params[:app], params[:env], index
+        log[:log]
       end
 
       # SSH keys
