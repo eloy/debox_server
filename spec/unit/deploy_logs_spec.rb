@@ -3,14 +3,15 @@ require 'spec_helper'
 describe 'DeboxServer::DeployLogs#save_deploy_logs' do
   it 'should store the given log data' do
     time = DateTime.now
-    out = OpenStruct.new time: time, success: true, buffer: 'Some log content', result: 'Log result'
+    out = OpenStruct.new time: time, success: false, buffer: 'Some log content', result: 'Log result', error: 'Log result'
     server = DeboxServer::Core.new
     server.save_deploy_log 'test', 'production', 'deploy', out
     saved = server.deployer_logs_at 'test', 'production', 0
     DateTime.parse(saved[:time]).to_s.should eq time.to_s
-    saved[:success].should be_true
+    saved[:success].should be_false
+    saved[:status].should eq 'error'
     saved[:log].should eq 'Some log content'
-    saved[:result].should eq 'Log result'
+    saved[:error].should eq 'Log result'
   end
 
   it 'should store only max number of logs' do
@@ -37,7 +38,7 @@ end
 describe 'DeboxServer::DeployLogs#deployer_logs' do
   it 'should return current logs if present' do
     time = DateTime.now
-    out = OpenStruct.new time: time, success: true, buffer: 'Some log content', result: 'Log result'
+    out = OpenStruct.new time: time, success: true, buffer: 'Some log content'
     server = DeboxServer::Core.new
     server.save_deploy_log 'test', 'production', 'deploy', out
     logs = server.deployer_logs 'test', 'production'
@@ -45,6 +46,6 @@ describe 'DeboxServer::DeployLogs#deployer_logs' do
     DateTime.parse(saved[:time]).to_s.should eq time.to_s
     saved[:success].should be_true
     saved[:log].should eq 'Some log content'
-    saved[:result].should eq 'Log result'
+    saved[:status].should eq 'success'
   end
 end

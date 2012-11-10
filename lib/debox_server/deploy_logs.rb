@@ -37,8 +37,9 @@ module DeboxServer
         task: task,
         time: out.time,
         success: out.success,
-        log: out.buffer,
-        result: out.result
+        status: out.success ? "success" : "error",
+        log: out.buffer || '** EMPTY BUFFER ** ',
+        error: out.error || ''
       }
       redis.lpush log_key_name(app, env), log_data.to_json
       if deployer_logs_count(app, env) > MAX_LOGS_COUNT
@@ -50,17 +51,19 @@ module DeboxServer
 
   # Output multiplexer
   class OutputMultiplexer
-    attr_reader :buffer, :time, :result, :success
+    attr_reader :buffer, :time, :result, :success, :error
 
-    def initialize(std_output)
-      @std_output = std_output
+    def initialize
       @time = DateTime.now
       @buffer = ''
+      @listeners = []
+      @channel = EM::Channel.new
     end
 
     def puts(msg)
       @buffer += msg
-      @std_output.puts msg
+      @channel.push msg
+      DeboxServer::log.debug msg
     end
 
     def result=(result)
@@ -69,8 +72,17 @@ module DeboxServer
     end
 
     def error=(error)
-      @result = error || 'Error'
+      @error = error || 'Error'
       @success = false
+    end
+
+    # Subscribe an output strem
+    def subscribe(out)
+      @channel.subscribe {|msg| out.puts msg}
+    end
+
+    def unsubscribe(sid)
+      @channel.unsubscribe sid
     end
 
     # Override some methods
