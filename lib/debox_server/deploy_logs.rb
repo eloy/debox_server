@@ -30,7 +30,7 @@ module DeboxServer
       "logger_#{app}_#{env}"
     end
 
-    def save_deploy_log(app, env, task, out)
+    def save_deploy_log(app, env, task, out, config)
       log_data = {
         app: app,
         env: env,
@@ -39,9 +39,12 @@ module DeboxServer
         success: out.success,
         status: out.success ? "success" : "error",
         log: out.buffer || '** EMPTY BUFFER ** ',
-        error: out.error || ''
+        error: out.error || '',
+        config: config
       }
       redis.lpush log_key_name(app, env), log_data.to_json
+
+      # Remove last logs
       if deployer_logs_count(app, env) > MAX_LOGS_COUNT
         redis.ltrim log_key_name(app, env), 0, MAX_LOGS_COUNT - 1
       end

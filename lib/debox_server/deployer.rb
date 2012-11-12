@@ -107,9 +107,8 @@ module DeboxServer
           #     capture(cmd) }
           # }
 
-          DeboxServer.log.info "Deploying from git: #{config[:git]}"
+          DeboxServer.log.info "Deploying from git: #{config[:repository]} #{config[:branch]}, #{config[:real_revision]}"
           result = config.find_and_execute_task(task, before: :start, after: :finish)
-
           @stdout.result = result
         rescue Exception => error
           DeboxServer::log.info "Task #{self.id} finished with error #{error}"
@@ -117,7 +116,13 @@ module DeboxServer
         end
         @running = false
 
-        save_deploy_log app, env, task, @stdout
+        capistrano_config = {
+          revision: config[:real_revision],
+          repository: config[:repository],
+          branch: config[:branch],
+        }
+
+        save_deploy_log app, env, task, @stdout, capistrano_config
         return self
       end
 
