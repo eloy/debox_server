@@ -90,6 +90,7 @@ module DeboxServer
         @recipe = recipe_content app, env
         @stdout = DeboxServer::OutputMultiplexer.new
         @running = false
+        @streams = []
       end
 
       def deploy
@@ -123,6 +124,11 @@ module DeboxServer
         }
 
         save_deploy_log app, env, task, @stdout, capistrano_config
+        @streams.each do |s|
+          @stdout.unsubscribe s[:sid]
+          s[:out].close
+        end
+        @streams = []
         return self
       end
 
@@ -135,10 +141,14 @@ module DeboxServer
       end
 
       def subscribe(out)
-        @stdout.subscribe(out)
+        sid = @stdout.subscribe(out)
+        @streams << { out: out, sid: sid }
       end
 
-      def unsubscribe(sid)
+      def unsubscribe(out, sid)
+        stream = @streams.select{ |s| s[:sid] == sid }
+        return unless stream
+        @streams.delete stream
         @stdout.unsubscribe(sid)
       end
 

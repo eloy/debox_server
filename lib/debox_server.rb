@@ -153,15 +153,16 @@ module DeboxServer
       get "/live_log/:app/:env/?:job_id?" do
         stream(:keep_open) do |out|
           job = DeboxServer::Deployer::running_job params[:app], params[:env]
-          if params[:job_id].nil? || params[:job_id] == job.id
+          if job && (params[:job_id].nil? || params[:job_id] == job.id)
             out.puts "Living log for #{job.id}:"
             out.puts job.buffer # Show current buffer
             sid = job.subscribe out
-            out.callback { job.unsubscribe(sid) }
-            out.errback { job.unsubscribe(sid) }
+            out.callback { job.unsubscribe(out, sid) }
+            out.errback { job.unsubscribe(out, sid) }
           else
             out.puts "Not running"
             out.flush
+            out.close
           end
         end
       end

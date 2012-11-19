@@ -30,7 +30,7 @@ module DeboxServer
       "logger_#{app}_#{env}"
     end
 
-    def save_deploy_log(app, env, task, out, config)
+    def save_deploy_log(app, env, task, out, config={})
       log_data = {
         app: app,
         env: env,
