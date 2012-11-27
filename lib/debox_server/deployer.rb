@@ -111,25 +111,32 @@ module DeboxServer
           DeboxServer.log.info "Deploying from git: #{config[:repository]} #{config[:branch]}, #{config[:real_revision]}"
           result = config.find_and_execute_task(task, before: :start, after: :finish)
           @stdout.result = result
+
+          capistrano_config = {
+            revision: config[:real_revision],
+            repository: config[:repository],
+            branch: config[:branch],
+          }
+
+
         rescue Exception => error
-          DeboxServer::log.info "Task #{self.id} finished with error #{error}"
+          DeboxServer::log.warn "Task #{self.id} finished with error #{error}"
           @stdout.error = error
         end
-        @running = false
 
-        capistrano_config = {
-          revision: config[:real_revision],
-          repository: config[:repository],
-          branch: config[:branch],
-        }
+        begin
+          @running = false
 
-        save_deploy_log app, env, task, @stdout, capistrano_config
-        @streams.each do |s|
-          @stdout.unsubscribe s[:sid]
-          s[:out].close
+          save_deploy_log app, env, task, @stdout, capistrano_config
+          @streams.each do |s|
+            @stdout.unsubscribe s[:sid]
+            s[:out].close
+          end
+          @streams = []
+          return self
+        rescue
+          return false
         end
-        @streams = []
-        return self
       end
 
       def buffer
