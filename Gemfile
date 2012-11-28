@@ -5,6 +5,7 @@ gem 'sinatra-contrib'
 gem 'thin'
 gem 'json'
 gem 'capistrano'
+gem 'capistrano-node-deploy'
 gem 'redis'
 gem 'log4r'
 
