@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'thin'
   gem.add_runtime_dependency 'json'
   gem.add_runtime_dependency 'capistrano'
+  gem.add_runtime_dependency 'capistrano-node-deploy'
   gem.add_runtime_dependency 'redis'
   gem.add_runtime_dependency 'log4r'
 

@@ -94,50 +94,49 @@ module DeboxServer
       end
 
       def deploy
+        execute_task
+        save_log
+        unsubscribe_all
+        return self
+      end
+
+      # Load the recipe and execute the task
+      def execute_task
         @running = true
-        config = new_capistrano_config @stdout
-
         begin
+          @config = new_capistrano_config @stdout
           # Load the recipe content
-          config.load string: @recipe
+          @config.load string: @recipe
 
-          # # Don't ask for real revision on localhost
-          # # http://thread.gmane.org/gmane.comp.lang.ruby.capistrano.general/4384
-          # config.set(:real_revision) {
-          #   source.query_revision(revision) { |cmd|
-          #     capture(cmd) }
-          # }
-
-          DeboxServer.log.info "Deploying from git: #{config[:repository]} #{config[:branch]}, #{config[:real_revision]}"
-          result = config.find_and_execute_task(task, before: :start, after: :finish)
+          DeboxServer.log.info "Deploying from git: #{@config[:repository]} #{@config[:branch]}, #{@config[:real_revision]}"
+          result = @config.find_and_execute_task(task, before: :start, after: :finish)
           @stdout.result = result
-
-          capistrano_config = {
-            revision: config[:real_revision],
-            repository: config[:repository],
-            branch: config[:branch],
-          }
-
 
         rescue Exception => error
           DeboxServer::log.warn "Task #{self.id} finished with error #{error}"
           @stdout.error = error
-        end
-
-        begin
-          @running = false
-
-          save_deploy_log app, env, task, @stdout, capistrano_config
-          @streams.each do |s|
-            @stdout.unsubscribe s[:sid]
-            s[:out].close
-          end
-          @streams = []
-          return self
-        rescue
           return false
+        ensure
+          @running = false
         end
       end
+
+      # Save capistrano logs in redis
+      def save_log
+        begin
+          capistrano_config = {
+            revision: @config[:real_revision],
+            repository: @config[:repository],
+            branch: @config[:branch],
+          }
+
+          save_deploy_log app, env, task, @stdout, capistrano_config
+        rescue Exception => error
+          DeboxServer::log.warn "Error saving logs from #{self.id}: #{error}"
+        end
+
+      end
+
 
       def buffer
         @stdout.buffer
@@ -157,6 +156,14 @@ module DeboxServer
         return unless stream
         @streams.delete stream
         @stdout.unsubscribe(sid)
+      end
+
+      def unsubscribe_all
+        @streams.each do |s|
+          @stdout.unsubscribe s[:sid]
+          s[:out].close
+        end
+        @streams = []
       end
 
       private
