@@ -15,7 +15,8 @@ module DeboxServer
     end
 
     def deployer_logs_at(app, env, index)
-      JSON.parse redis.lindex(log_key_name(app, env), index), symbolize_names: true
+      log = redis.lindex(log_key_name(app, env), index)
+      JSON.parse log, symbolize_names: true if log
     end
 
     def deployer_logs_count(app, env)

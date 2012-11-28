@@ -144,7 +144,7 @@ module DeboxServer
         task = params[:task] || 'deploy'
         throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
         job = schedule_deploy_job(app, env, task)
-        json job_id: job.id , status: 'todo'
+        json job_id: job.id , app: app, env: env, task: task
       end
 
       # logs
@@ -178,6 +178,7 @@ module DeboxServer
       get "/logs/:app/:env/:index" do
         index = params[:index] == 'last' ? 0 : params[:index]
         log = deployer_logs_at params[:app], params[:env], index
+        throw(:halt, [400, "Log not found.\n"]) unless log
         log[:log]
       end
 
