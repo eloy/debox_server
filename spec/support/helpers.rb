@@ -22,3 +22,13 @@ end
 def md5_file(filename)
   Digest::MD5.file(filename)
 end
+
+
+# Build a job with stdout and capistrano methos stubbed
+def stubbed_job(app, env, task='deploy', out=nil)
+  out = OpenStruct.new time: time, success: true unless out
+  job = DeboxServer::Job.new(app, env, task)
+  job.stub(:stdout) { out }
+  job.stub(:capistrano) { { } }
+  return job
+end

@@ -5,7 +5,10 @@ describe '/api/logs/:app/:env' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content', error: 'Log result'
     server = DeboxServer::Core.new
-    server.save_deploy_log 'test', 'production', 'deploy', out
+
+    job = stubbed_job 'test', 'production', 'deploy', out
+    job.save_log
+
     login_user
     get '/api/logs/test/production'
     last_response.should be_ok
@@ -15,7 +18,6 @@ describe '/api/logs/:app/:env' do
     saved[:error].should eq 'Log result'
     saved[:status].should eq 'success'
   end
-
 
   it 'should return invalid if log does not exists' do
     time = DateTime.now

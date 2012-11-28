@@ -5,7 +5,10 @@ describe 'DeboxServer::DeployLogs#save_deploy_logs' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: false, buffer: 'Some log content', result: 'Log result', error: 'Log result'
     server = DeboxServer::Core.new
-    server.save_deploy_log 'test', 'production', 'deploy', out
+
+    job = stubbed_job 'test', 'production', 'deploy', out
+    job.save_log
+
     saved = server.deployer_logs_at 'test', 'production', 0
     DateTime.parse(saved[:time]).to_s.should eq time.to_s
     saved[:success].should be_false
@@ -21,11 +24,13 @@ describe 'DeboxServer::DeployLogs#save_deploy_logs' do
     server = DeboxServer::Core.new
     app = 'test'
     env = 'production'
-    DeboxServer::DeployLogs::MAX_LOGS_COUNT.times do
-      server.save_deploy_log app, env, 'deploy', out
-    end
 
-    server.save_deploy_log app, env, 'deploy', last
+    DeboxServer::DeployLogs::MAX_LOGS_COUNT.times do
+      job = stubbed_job app, env, 'deploy', out
+      job.save_log
+    end
+    job = stubbed_job app, env, 'deploy', last
+    job.save_log
 
     server.deployer_logs_count(app, env).should eq DeboxServer::DeployLogs::MAX_LOGS_COUNT
     saved_last = server.deployer_logs_last app, env
@@ -40,7 +45,10 @@ describe 'DeboxServer::DeployLogs#deployer_logs' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content'
     server = DeboxServer::Core.new
-    server.save_deploy_log 'test', 'production', 'deploy', out
+
+    job = stubbed_job 'test', 'production', 'deploy', out
+    job.save_log
+
     logs = server.deployer_logs 'test', 'production'
     saved = logs.first
     DateTime.parse(saved[:time]).to_s.should eq time.to_s
@@ -56,7 +64,8 @@ describe 'DeboxServer::DeployLogs#deployer_logs_at' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content'
     server = DeboxServer::Core.new
-    server.save_deploy_log 'test', 'production', 'deploy', out
+    job = stubbed_job 'test', 'production', 'deploy', out
+    job.save_log
     saved = server.deployer_logs_at 'test', 'production', 0
     DateTime.parse(saved[:time]).to_s.should eq time.to_s
     saved[:success].should be_true

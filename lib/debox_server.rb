@@ -17,6 +17,7 @@ require "debox_server/apps"
 require "debox_server/users"
 require "debox_server/recipes"
 require "debox_server/deploy_logs"
+require "debox_server/job"
 require "debox_server/deployer"
 require "debox_server/basic_auth"
 
@@ -143,7 +144,8 @@ module DeboxServer
         env = params[:env]
         task = params[:task] || 'deploy'
         throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
-        job = schedule_deploy_job(app, env, task)
+        job = Job.new(app, env, task)
+        schedule_job(job)
         json job_id: job.id , app: app, env: env, task: task
       end
 
