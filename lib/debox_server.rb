@@ -139,10 +139,29 @@ module DeboxServer
       #----------------------------------------------------------------------
 
       # Deploy an app
+      # Deprecated
       get "/deploy/:app/:env/?:task?" do
         app = params[:app]
         env = params[:env]
         task = params[:task] || 'deploy'
+        throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
+        job = Job.new(app, env, task)
+        schedule_job(job)
+        json job_id: job.id , app: app, env: env, task: task
+      end
+
+      # Deploy an app
+      get "/cap/:app/?:env?" do
+        app = params[:app]
+        task = params[:task] || 'deploy'
+        env = params[:env]
+
+        unless env
+          recipes = recipes_list app
+          throw(:halt, [400, "Enviromnment must be set.\n"]) if recipes.count != 1
+          env = recipes.first
+        end
+
         throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
         job = Job.new(app, env, task)
         schedule_job(job)
