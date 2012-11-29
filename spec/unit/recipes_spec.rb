@@ -15,7 +15,7 @@ describe DeboxServer::Recipes do
     it 'should create an app if not present' do
       server = FakeServer.new
       server.create_recipe(app, :production, content)
-      server.apps_exists?(app).should be_true
+      server.app_exists?(app).should be_true
     end
   end
 

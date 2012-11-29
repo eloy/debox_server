@@ -20,6 +20,7 @@ require "debox_server/deploy_logs"
 require "debox_server/job"
 require "debox_server/deployer"
 require "debox_server/basic_auth"
+require "debox_server/view_helpers"
 
 # TODO get root without the ../
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
@@ -48,6 +49,7 @@ module DeboxServer
     require 'rack'
     include DeboxServer::App
     include DeboxServer::BasicAuth
+    include DeboxServer::ViewHelpers
 
     register Sinatra::Namespace
     helpers Sinatra::Streaming
@@ -134,7 +136,6 @@ module DeboxServer
         json recipes_list(params[:app])
       end
 
-
       # deploy
       #----------------------------------------------------------------------
 
@@ -152,28 +153,19 @@ module DeboxServer
 
       # Deploy an app
       get "/cap/:app/?:env?" do
-        app = params[:app]
         task = params[:task] || 'deploy'
-        env = params[:env]
-
-        unless env
-          recipes = recipes_list app
-          throw(:halt, [400, "Enviromnment must be set.\n"]) if recipes.count != 1
-          env = recipes.first
-        end
-
-        throw(:halt, [400, "Recipe not found.\n"]) unless recipe_exists? app, env
-        job = Job.new(app, env, task)
+        job = Job.new(current_app, current_env, task)
         schedule_job(job)
-        json job_id: job.id , app: app, env: env, task: task
+        json job_id: job.id , app: current_app, env: current_env, task: task
       end
 
       # logs
       #----------------------------------------------------------------------
 
-      get "/live_log/:app/:env/?:job_id?" do
+      get "/live_log/:app/?:env?/?:job_id?" do
         stream(:keep_open) do |out|
-          job = DeboxServer::Deployer::running_job params[:app], params[:env]
+
+          job = DeboxServer::Deployer::running_job current_app, current_env
           if job && (params[:job_id].nil? || params[:job_id] == job.id)
             out.puts "Living log for #{job.id}:"
             out.puts job.buffer # Show current buffer
@@ -188,8 +180,8 @@ module DeboxServer
         end
       end
 
-      get "/logs/:app/:env" do
-        logs = deployer_logs params[:app], params[:env]
+      get "/logs/:app/?:env?" do
+        logs = deployer_logs current_app, current_env
         out = logs.map do |l|
           { status: l[:status], task: l[:task], time: l[:time], error: l[:error] }
         end
@@ -198,7 +190,7 @@ module DeboxServer
 
       get "/logs/:app/:env/:index" do
         index = params[:index] == 'last' ? 0 : params[:index]
-        log = deployer_logs_at params[:app], params[:env], index
+        log = deployer_logs_at current_app, current_env, index
         throw(:halt, [400, "Log not found.\n"]) unless log
         log[:log]
       end

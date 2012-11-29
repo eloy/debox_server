@@ -5,7 +5,7 @@ describe '/api/logs/:app/:env' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content', error: 'Log result'
     server = DeboxServer::Core.new
-
+    server.create_recipe('test', 'production', 'content')
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
 
@@ -19,10 +19,30 @@ describe '/api/logs/:app/:env' do
     saved[:status].should eq 'success'
   end
 
+  it 'should set default env if not set and only one available' do
+    time = DateTime.now
+    out = OpenStruct.new time: time, success: true, buffer: 'Some log content', error: 'Log result'
+    server = DeboxServer::Core.new
+    server.create_recipe('test', 'production', 'content')
+    job = stubbed_job 'test', 'production', 'deploy', out
+    job.save_log
+
+    login_user
+    get '/api/logs/test'
+    last_response.should be_ok
+    data = JSON.parse last_response.body, symbolize_names: true
+    saved = data.first
+    DateTime.parse(saved[:time]).to_s.should eq time.to_s
+    saved[:error].should eq 'Log result'
+    saved[:status].should eq 'success'
+  end
+
+
   it 'should return invalid if log does not exists' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content', error: 'Log result'
     server = DeboxServer::Core.new
+    server.create_recipe('test', 'production', 'content')
     login_user
     get '/api/logs/test/production/last'
     last_response.should_not be_ok

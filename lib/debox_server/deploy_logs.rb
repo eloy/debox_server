@@ -1,7 +1,7 @@
 module DeboxServer
   module DeployLogs
 
-    MAX_LOGS_COUNT = 10
+    MAX_LOGS_COUNT = 15
 
     def deployer_logs(app, env)
       range = redis.lrange log_key_name(app, env), 0, MAX_LOGS_COUNT

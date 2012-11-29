@@ -3,12 +3,12 @@ module DeboxServer
 
     APP_KEY = 'apps'
     def apps_create(app)
-      return false if apps_exists? app
+      return false if app_exists? app
       redis.sadd(APP_KEY, app)
       redis_save
     end
 
-    def apps_exists?(app)
+    def app_exists?(app)
       redis.sismember(APP_KEY, app)
     end
 

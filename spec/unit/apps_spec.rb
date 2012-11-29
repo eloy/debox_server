@@ -18,16 +18,16 @@ describe DeboxServer::Apps do
   end
 
 
-  describe 'DeboxServer::Apps#apps_exists?' do
+  describe 'DeboxServer::Apps#app_exists?' do
     it 'should return false if the app does not exists' do
       server = DeboxServer::Core.new
-      server.apps_exists?('test').should be_false
+      server.app_exists?('test').should be_false
     end
 
     it 'should return true if the app exists' do
       server = DeboxServer::Core.new
       server.apps_create 'test'
-      server.apps_exists?('test').should be_true
+      server.app_exists?('test').should be_true
     end
   end
 

@@ -11,14 +11,16 @@ describe '/api/cap/:app' do
     login_user
     get '/api/cap/test/production?task=deploy'
     last_response.should_not be_ok
-    last_response.body.should match 'Recipe not found'
+    last_response.body.should match 'App not found'
   end
 
   it 'should set default task if not setted' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     login_user
+
     get "api/cap/#{@app}/#{@env}"
+
     last_response.should be_ok
     job = JSON.parse last_response.body, symbolize_names: true
     job[:app].should eq @app
@@ -48,13 +50,12 @@ describe '/api/cap/:app' do
     last_response.body.should match 'Enviromnment must be set'
   end
 
-  # TODO: Should fail with app not found
   it 'should fail without env param and app not found' do
     server = FakeServer.new
     login_user
     get "api/cap/#{@app}"
     last_response.should_not be_ok
-    last_response.body.should match 'Enviromnment must be set'
+    last_response.body.should match 'App not found'
   end
 
   it 'should set default env if not setted' do
