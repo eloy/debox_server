@@ -16,16 +16,15 @@ Gem::Specification.new do |gem|
   gem.version       = DeboxServer::VERSION
 
   gem.add_runtime_dependency 'rake'
-  gem.add_runtime_dependency 'sinatra'
-  gem.add_runtime_dependency 'sinatra-contrib'
+  gem.add_runtime_dependency 'rack'
+  gem.add_runtime_dependency 'grape'
   gem.add_runtime_dependency 'thin'
   gem.add_runtime_dependency 'json'
   gem.add_runtime_dependency 'capistrano'
-  gem.add_runtime_dependency 'capistrano-node-deploy'
   gem.add_runtime_dependency 'redis'
   gem.add_runtime_dependency 'log4r'
 
   # Development dependencies
   gem.add_development_dependency 'rspec'
-
+  gem.add_development_dependency 'rack-test'
 end

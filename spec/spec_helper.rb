@@ -5,19 +5,10 @@ require 'rubygems'
 require 'bundler'
 
 Bundler.require
-require 'sinatra'
 require 'rack/test'
 
-# require 'debox_server/spec_helper'
-
-# setup test environment
-set :environment, :test
-set :run, false
-set :raise_errors, true
-set :logging, false
-
 def app
-  DeboxServer::HTTP
+  DeboxServer::DeboxAPI
 end
 
 # Require support files

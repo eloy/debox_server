@@ -3,10 +3,7 @@ module DeboxServer
     include DeboxServer::Users
 
     def authenticate!
-      unless authorized?
-        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-        throw(:halt, [401, "Not authorized\n"])
-      end
+      error!("Access Denied", 401) unless authorized?
     end
 
     def authorized?

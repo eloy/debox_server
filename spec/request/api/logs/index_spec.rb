@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe '/api/logs/:app/:env' do
+describe '/v1/logs/:app/:env' do
   it 'should return all the logs' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content', error: 'Log result'
@@ -10,7 +10,9 @@ describe '/api/logs/:app/:env' do
     job.save_log
 
     login_user
-    get '/api/logs/test/production'
+    get '/v1/logs/test/production'
+    p last_response.body
+
     last_response.should be_ok
     data = JSON.parse last_response.body, symbolize_names: true
     saved = data.first
@@ -28,7 +30,7 @@ describe '/api/logs/:app/:env' do
     job.save_log
 
     login_user
-    get '/api/logs/test'
+    get '/v1/logs/test'
     last_response.should be_ok
     data = JSON.parse last_response.body, symbolize_names: true
     saved = data.first
@@ -44,7 +46,7 @@ describe '/api/logs/:app/:env' do
     server = DeboxServer::Core.new
     server.create_recipe('test', 'production', 'content')
     login_user
-    get '/api/logs/test/production/last'
+    get '/v1/logs/test/production/last'
     last_response.should_not be_ok
     last_response.body.should match 'Log not found'
   end

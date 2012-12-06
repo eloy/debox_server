@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe '/api/cap/:app' do
+describe '/v1/cap/:app' do
 
   before :each do
     @app = 'test'
@@ -9,7 +9,7 @@ describe '/api/cap/:app' do
 
   it 'should deal with invalid @app' do
     login_user
-    get '/api/cap/test/production?task=deploy'
+    get '/v1/cap/test/production?task=deploy'
     last_response.should_not be_ok
     last_response.body.should match 'App not found'
   end

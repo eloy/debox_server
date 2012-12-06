@@ -3,4 +3,5 @@ require 'bundler'
 
 Bundler.require
 
-run DeboxServer::HTTP
+use Rack::Reloader
+run DeboxServer::DeboxAPI

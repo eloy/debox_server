@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe '/api/deploy/:app/:env' do
+describe '/v1/deploy/:app/:env' do
   it 'should deal with invalid app' do
     login_user
-    get '/api/deploy/test/production'
+    get '/v1/deploy/test/production'
     last_response.should_not be_ok
     last_response.body.should match 'Recipe not found'
   end
