@@ -11,7 +11,6 @@ describe '/v1/logs/:app/:env' do
 
     login_user
     get '/v1/logs/test/production'
-    p last_response.body
 
     last_response.should be_ok
     data = JSON.parse last_response.body, symbolize_names: true

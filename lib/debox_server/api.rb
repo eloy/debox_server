@@ -9,5 +9,11 @@ module DeboxServer
     #----------------------------------------------------------------------
     mount DeboxServer::API::V1::Users
     mount DeboxServer::API::V1::Logs
+    mount DeboxServer::API::V1::Recipes
+    mount DeboxServer::API::V1::Cap
+    mount DeboxServer::API::V1::Apps
+    mount DeboxServer::API::V1::SshKeys
+    mount DeboxServer::API::V1::ApiKeys
+
   end
 end

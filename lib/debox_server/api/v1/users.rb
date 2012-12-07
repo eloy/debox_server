@@ -18,12 +18,13 @@ module DeboxServer
 
           post '/create' do
             user = add_user params[:user], params[:password]
-            throw(:halt, [400, "Unvalid request\n"]) unless user
+            error!("Can't create user", 400) unless user
             "ok"
           end
 
+          # TODO validate params
           delete '/destroy' do
-            throw(:halt, [400, "Unvalid request\n"]) unless params[:user]
+            error!("Invalid param", 400) unless params[:user]
             users_destroy params[:user]
             "ok"
           end

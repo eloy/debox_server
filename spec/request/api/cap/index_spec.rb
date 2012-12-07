@@ -19,7 +19,7 @@ describe '/v1/cap/:app' do
     server.create_recipe(@app, @env, 'content')
     login_user
 
-    get "api/cap/#{@app}/#{@env}"
+    get "/v1/cap/#{@app}/#{@env}"
 
     last_response.should be_ok
     job = JSON.parse last_response.body, symbolize_names: true
@@ -32,7 +32,7 @@ describe '/v1/cap/:app' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     login_user
-    get "api/cap/#{@app}?task=node:restart"
+    get "/v1/cap/#{@app}?task=node:restart"
     last_response.should be_ok
     job = JSON.parse last_response.body, symbolize_names: true
     job[:app].should eq @app
@@ -45,7 +45,7 @@ describe '/v1/cap/:app' do
     server.create_recipe(@app, @env, 'content')
     server.create_recipe(@app, 'other', 'content')
     login_user
-    get "api/cap/#{@app}"
+    get "/v1/cap/#{@app}"
     last_response.should_not be_ok
     last_response.body.should match 'Enviromnment must be set'
   end
@@ -53,7 +53,7 @@ describe '/v1/cap/:app' do
   it 'should fail without env param and app not found' do
     server = FakeServer.new
     login_user
-    get "api/cap/#{@app}"
+    get "/v1/cap/#{@app}"
     last_response.should_not be_ok
     last_response.body.should match 'App not found'
   end
@@ -62,7 +62,7 @@ describe '/v1/cap/:app' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     login_user
-    get "api/cap/#{@app}"
+    get "/v1/cap/#{@app}"
     last_response.should be_ok
     job = JSON.parse last_response.body, symbolize_names: true
     job[:app].should eq @app
@@ -74,7 +74,7 @@ describe '/v1/cap/:app' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'load "invalid"')
     login_user
-    get "api/cap/#{@app}/#{@env}"
+    get "/v1/cap/#{@app}/#{@env}"
 
     last_response.should be_ok
 

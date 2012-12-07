@@ -7,9 +7,20 @@ module DeboxServer
         version 'v1'
         format :json
 
-        # before do
-        #   authenticate!
-        # end
+        before do
+          authenticate!
+        end
+
+
+        helpers do
+          def get_logs_helper(app, env)
+            logs = deployer_logs app, env
+            out = logs.map do |l|
+              { status: l[:status], task: l[:task], time: l[:time], error: l[:error] }
+            end
+            out
+          end
+        end
 
         resource :logs do
           # get "/live_log/:app/?:env?/?:job_id?" do
@@ -30,16 +41,13 @@ module DeboxServer
           #   end
           # end
 
-          params do
-            requires :app, type: String
-            optional :env, type: String
+
+          get "/:app" do
+            get_logs_helper current_app, current_env
           end
+
           get "/:app/:env" do
-            logs = deployer_logs current_app, current_env
-            out = logs.map do |l|
-              { status: l[:status], task: l[:task], time: l[:time], error: l[:error] }
-            end
-            out
+            get_logs_helper current_app, current_env
           end
 
           get "/:app/:env/:index" do
