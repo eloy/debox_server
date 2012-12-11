@@ -17,13 +17,12 @@ module DeboxServer
       @task = task
       @recipe = recipe_content app, env
       @running = false
-      @streams = []
     end
 
     def deploy
       execute_task
       save_log
-      unsubscribe_all
+      trigger_on_finish
       return self
     end
 
@@ -53,7 +52,7 @@ module DeboxServer
       begin
         redis.lpush log_key_name(app, env), job_info.to_json
 
-          # Remove last logs
+        # Remove last logs
         if deployer_logs_count(app, env) > MAX_LOGS_COUNT
           redis.ltrim log_key_name(app, env), 0, MAX_LOGS_COUNT - 1
         end
@@ -83,10 +82,7 @@ module DeboxServer
       }
     end
 
-    def stdout
-      @multiplexed_stdout ||= DeboxServer::OutputMultiplexer.new
-    end
-
+    # Current job output
     def buffer
       stdout.buffer
     end
@@ -95,31 +91,41 @@ module DeboxServer
       @running
     end
 
-    def subscribe(out)
-      sid = stdout.subscribe(out)
-      @streams << { out: out, sid: sid }
+    # callbacks
+    #----------------------------------------------------------------------
+
+
+    def subscribe(&block)
+      stdout.channel.subscribe block
     end
 
-    def unsubscribe(out, sid)
-      stream = @streams.select{ |s| s[:sid] == sid }
-      return unless stream
-      @streams.delete stream
-      stdout.unsubscribe(sid)
+    def unsubscribe(sid)
+      stdout.channel.unsubscribe sid
     end
 
-    def unsubscribe_all
-      @streams.each do |s|
-        stdout.unsubscribe s[:sid]
-        s[:out].close
+    def on_finish(&block)
+      on_finish_callbacks << block
+    end
+
+    private
+
+    def trigger_on_finish
+      on_finish_callbacks.each do |callback|
+        callback.call
       end
-      @streams = []
+    end
+
+    def on_finish_callbacks
+      @on_finish_callbacks ||= []
     end
 
     def capistrano
       @capistrano_config ||= new_capistrano_config stdout
     end
 
-    private
+    def stdout
+      @multiplexed_stdout ||= DeboxServer::OutputMultiplexer.new
+    end
 
     # Return an empty capistrano config
     def new_capistrano_config(out)

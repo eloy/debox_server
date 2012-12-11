@@ -21,7 +21,11 @@ module DeboxServer
               @job = DeboxServer::Deployer::running_job app, env
               if @job && (params[:job_id].nil? || params[:job_id] == @job.id)
                 chunk @job.buffer # Show current buffer
-                @sid = @job.channel.subscribe{ |l| chunk l }
+                @sid = @job.subscribe{ |l| chunk l }
+                @job.on_finish do
+                  @job.unsubscribe @sid
+                  close
+                end
               else
                 chunk "Job not running."
                 close
@@ -29,7 +33,7 @@ module DeboxServer
 
               before_close do
                 DeboxServer.log.info "Closed connection to #{app} #{env}"
-                @job.channel.unsubscribe @sid if @job
+                @job.unsubscribe @sid if @job
               end
 
             end
