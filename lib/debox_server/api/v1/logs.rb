@@ -11,8 +11,8 @@ module DeboxServer
           authenticate!
         end
 
-
         helpers do
+
           def get_logs_helper(app, env)
             logs = deployer_logs app, env
             out = logs.map do |l|
@@ -23,24 +23,6 @@ module DeboxServer
         end
 
         resource :logs do
-          # get "/live_log/:app/?:env?/?:job_id?" do
-          #   stream(:keep_open) do |out|
-
-          #     job = DeboxServer::Deployer::running_job current_app, current_env
-          #     if job && (params[:job_id].nil? || params[:job_id] == job.id)
-          #       out.puts "Living log for #{job.id}:"
-          #       out.puts job.buffer # Show current buffer
-          #       sid = job.subscribe out
-          #       out.callback { job.unsubscribe(out, sid) }
-          #       out.errback { job.unsubscribe(out, sid) }
-          #     else
-          #       out.puts "Not running"
-          #       out.flush
-          #       out.close
-          #     end
-          #   end
-          # end
-
 
           get "/:app" do
             get_logs_helper current_app, current_env
@@ -50,6 +32,7 @@ module DeboxServer
             get_logs_helper current_app, current_env
           end
 
+          # TODO change route
           get "/:app/:env/:index" do
             index = params[:index] == 'last' ? 0 : params[:index]
             log = deployer_logs_at current_app, current_env, index
@@ -57,9 +40,7 @@ module DeboxServer
             log[:log]
           end
 
-
         end
-
       end
     end
   end
