@@ -1,5 +1,7 @@
 # Async response for Thin and other EventMachine servers
 # Inspired on this post: http://polycrystal.org/2012/04/15/asynchronous_responses_in_rack.html
+require 'eventmachine'
+
 module ThrowAsync
 
   def chunk(content)
