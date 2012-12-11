@@ -41,12 +41,15 @@ module DeboxServer
       @time = DateTime.now
       @buffer = ''
       @listeners = []
-      @channel = EM::Channel.new
+    end
+
+    def channel
+      @em_channel ||= EM::Channel.new
     end
 
     def puts(msg)
       @buffer += msg
-      @channel.push msg
+      channel.push msg
       DeboxServer::log.debug msg
     end
 
@@ -58,15 +61,6 @@ module DeboxServer
     def error=(error)
       @error = error || 'Error'
       @success = false
-    end
-
-    # Subscribe an output strem
-    def subscribe(out)
-      @channel.subscribe {|msg| out.puts msg}
-    end
-
-    def unsubscribe(sid)
-      @channel.unsubscribe sid
     end
 
     # Override some methods
