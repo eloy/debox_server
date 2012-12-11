@@ -8,7 +8,7 @@ module DeboxServer
     PRIVATE_KEY = File.join SSH_DIR, 'id_rsa'
 
     def ssh_public_key
-      @@public_key ||= read_ssh_public_key
+      @@public_key ||= SshKeys::read_ssh_public_key
     end
 
     # Rake helpers
@@ -18,8 +18,8 @@ module DeboxServer
     def self.init_ssh_subsystem
       return true if ssh_keys_presents?
       RedisDB::check_redis_connection!
-      public = REDIS.hget 'ssh_keys', :public_key
-      private = REDIS.hget 'ssh_keys', :private_key
+      public = RedisDB::redis.hget 'ssh_keys', :public_key
+      private = RedisDB::redis.hget 'ssh_keys', :private_key
       if public.nil? || public.empty? || private.nil? || private.empty?
         # Generate keys if not present
         ssh_keygen
@@ -50,15 +50,15 @@ module DeboxServer
       RedisDB::check_redis_connection!
       public = File.open(PUBLIC_KEY).read
       private = File.open(PRIVATE_KEY).read
-      REDIS.hset 'ssh_keys', :public_key, public
-      REDIS.hset 'ssh_keys', :private_key,  private
+      RedisDB::redis.hset 'ssh_keys', :public_key, public
+      RedisDB::redis.hset 'ssh_keys', :private_key,  private
     end
 
     def self.ssh_keys_export
       raise 'SSH keys already present' if ssh_keys_presents?
       RedisDB::check_redis_connection!
-      public = REDIS.hget 'ssh_keys', :public_key
-      private = REDIS.hget 'ssh_keys', :private_key
+      public = RedisDB::redis.hget 'ssh_keys', :public_key
+      private = RedisDB::redis.hget 'ssh_keys', :private_key
       if public.nil? || public.empty? || private.nil? || private.empty?
         raise 'SSH keys not found'
       end
@@ -69,8 +69,7 @@ module DeboxServer
       FileUtils.chmod 0600, PUBLIC_KEY
     end
 
-    private
-    def read_ssh_public_key
+    def self.read_ssh_public_key
       raise 'RSA public key not present.' unless SshKeys::ssh_keys_presents?
       File.open(PUBLIC_KEY).read
     end
