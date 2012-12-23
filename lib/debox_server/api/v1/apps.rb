@@ -11,9 +11,22 @@ module DeboxServer
           authenticate!
         end
 
+
+        helpers do
+          def detailed_apps_list
+            apps = []
+            apps_list.each do |app|
+              recipes = recipes_list app
+              apps << { app: app, envs: recipes }
+            end
+            return apps
+          end
+        end
+
+
         desc "Return configured apps"
         get '/apps' do
-          apps_list
+          detailed_apps_list
         end
 
       end
