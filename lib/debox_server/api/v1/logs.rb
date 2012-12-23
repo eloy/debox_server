@@ -20,6 +20,13 @@ module DeboxServer
             end
             out
           end
+
+          def show_log(app, env, index=0)
+            log = deployer_logs_at current_app, current_env, index
+            error!("Log not found", 400) unless log
+            log[:log]
+          end
+
         end
 
         resource :logs do
@@ -31,16 +38,21 @@ module DeboxServer
           get "/:app/:env" do
             get_logs_helper current_app, current_env
           end
+        end
 
-          # TODO change route
-          get "/:app/:env/:index" do
+
+        resource :log do
+          get "/:app/:env" do
             index = params[:index] == 'last' ? 0 : params[:index]
-            log = deployer_logs_at current_app, current_env, index
-            error!("Log not found", 400) unless log
-            log[:log]
+            show_log current_app, current_env, index
           end
 
+          get "/:app" do
+            index = params[:index] == 'last' ? 0 : params[:index]
+            show_log current_app, current_env, index
+          end
         end
+
       end
     end
   end

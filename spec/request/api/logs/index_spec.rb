@@ -38,16 +38,4 @@ describe '/v1/logs/:app/:env' do
     saved[:status].should eq 'success'
   end
 
-
-  it 'should return invalid if log does not exists' do
-    time = DateTime.now
-    out = OpenStruct.new time: time, success: true, buffer: 'Some log content', error: 'Log result'
-    server = DeboxServer::Core.new
-    server.create_recipe('test', 'production', 'content')
-    login_user
-    get '/v1/logs/test/production/last'
-    last_response.should_not be_ok
-    last_response.body.should match 'Log not found'
-  end
-
 end
