@@ -43,13 +43,11 @@ module DeboxServer
 
         resource :log do
           get "/:app/:env" do
-            index = params[:index] == 'last' ? 0 : params[:index]
-            show_log current_app, current_env, index
+            show_log current_app, current_env, params[:index]
           end
 
           get "/:app" do
-            index = params[:index] == 'last' ? 0 : params[:index]
-            show_log current_app, current_env, index
+            show_log current_app, current_env, params[:index]
           end
         end
 
