@@ -31,7 +31,7 @@ module DeboxServer
     end
 
     def self.next_job_id
-      REDIS.incr(:next_job_id)
+      RedisDB::redis.incr(:next_job_id)
     end
 
     def self.add_job_to_queue(job)

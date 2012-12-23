@@ -5,28 +5,20 @@ require 'rubygems'
 require 'bundler'
 
 Bundler.require
-require 'sinatra'
 require 'rack/test'
 
-# require 'debox_server/spec_helper'
-
-# setup test environment
-set :environment, :test
-set :run, false
-set :raise_errors, true
-set :logging, false
-
 def app
-  DeboxServer::HTTP
+  DeboxServer::DeboxAPI
 end
 
-# Require support files
-Dir[File.join(DEBOX_ROOT, "spec/support/**/*.rb")].each {|f| require f}
+# Requires supporting files with custom matchers and macros, etc,
+# in ./support/ and its subdirectories.
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
+
   config.after(:each) do
-    REDIS.select DeboxServer::RedisDB.redis_db_no
-    REDIS.flushdb
+    DeboxServer::RedisDB.flush_test_db
   end
 
   config.include Rack::Test::Methods

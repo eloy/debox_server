@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-describe '/api/users/create' do
+describe '/v1/users/create' do
 
   it 'should fail without login' do
-    post '/api/users/create', user: 'new@indeos.es', password: 'secret'
+    post '/v1/users/create', user: 'new@indeos.es', password: 'secret'
     last_response.status.should eq 401
   end
 
 
   it 'should create a user with valid credentials' do
     login_user
-    post '/api/users/create', user: 'new@indeos.es', password: 'secret'
-    last_response.should be_ok
+    post '/v1/users/create', user: 'new@indeos.es', password: 'secret'
+    last_response.status.should eq 201
     last_response.body.should eq 'ok'
     find_user('new@indeos.es').should_not be_nil
   end

@@ -3,4 +3,4 @@ require 'bundler'
 
 Bundler.require
 
-run DeboxServer::HTTP
+run DeboxServer::DeboxAPI
