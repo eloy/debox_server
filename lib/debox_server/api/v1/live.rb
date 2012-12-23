@@ -13,14 +13,15 @@ module DeboxServer
         end
 
         helpers do
-          include ThrowAsync
+          include ThrowEventSource
 
           def live_log(app, env)
             async do
               DeboxServer.log.info "New live connection to #{app} #{env}"
               @job = DeboxServer::Deployer::running_job app, env
               if @job && (params[:job_id].nil? || params[:job_id] == @job.id)
-                chunk @job.buffer # Show current buffer
+                keep_alive # Keep alive the connection sending empty packages
+                chunk @job.buffer unless @job.buffer.empty? # Show current buffer
                 @sid = @job.subscribe{ |l| chunk l }
                 @job.on_finish do
                   @job.unsubscribe @sid

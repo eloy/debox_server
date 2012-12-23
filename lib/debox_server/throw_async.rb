@@ -33,7 +33,7 @@ module ThrowAsync
 
   def async(&block)
     # Send the reply headers
-    env['async.callback'].call [200, {'Content-Type' => 'text/plain'}, body]
+    env['async.callback'].call [200, {'Content-Type' => content_type}, body]
 
     # Call the given block
     block.call
@@ -58,6 +58,52 @@ module ThrowAsync
 
   def body
     @deferable_body ||= DeferrableBody.new
+  end
+
+  def content_type
+    'text/plain'
+  end
+end
+
+
+
+module ThrowEventSource
+  include ThrowAsync
+
+  def chunk(content)
+    # Send content line by line if include
+    # a \n char
+    if content.include? "\n"
+      content.split("\n").each do |line|
+        body.push "data: #{line}\n"
+      end
+    else
+      body.push "data: #{content}\n"
+    end
+
+    body.push "\n"
+  end
+
+
+  def close
+    @before_close_callback.call if @before_close_callback
+    @timer.cancel if @timer
+    body.push "data: job finished\n"
+    body.push "event: finish\n"
+    body.push "\n"
+  end
+
+  def keep_alive(timeout=5)
+    @timer = EM::PeriodicTimer.new(timeout) do
+      body.push ":"
+    end
+  end
+
+
+  private
+
+  def content_type
+    'text/event-stream'
   end
 
 end
