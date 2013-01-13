@@ -19,12 +19,12 @@ module DeboxServer
       return user_data
     end
 
-    def find_user!(email)
+    def users_find!(email)
       redis.hget('users', email)
     end
 
     def find_user(email)
-      user = find_user! email
+      user = users_find! email
       return OpenStruct.new JSON.parse(user) if user
     end
 
@@ -38,7 +38,7 @@ module DeboxServer
     end
 
     def users_make_admin!(email)
-      user_data = find_user!(email)
+      user_data = users_find!(email)
       return false unless user_data
       user = JSON.parse user_data
       user['admin'] = true
@@ -46,7 +46,7 @@ module DeboxServer
     end
 
     def users_remove_admin!(email)
-      user_data = find_user!(email)
+      user_data = users_find!(email)
       return false unless user_data
       user = JSON.parse user_data
       user['admin'] = false
