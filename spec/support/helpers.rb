@@ -9,7 +9,7 @@ end
 def create_user(opt={ })
   email = opt[:email] || 'test@indeos.es'
   password = opt[:password] || 'secret'
-  return FakeServer.new.add_user email, password, opt
+  server.add_user email, password, opt
 end
 
 def login_user(user=create_user)
@@ -17,7 +17,7 @@ def login_user(user=create_user)
 end
 
 def find_user(email)
-  FakeServer.new.find_user email
+  server.find_user email
 end
 
 def hash_str(str)
