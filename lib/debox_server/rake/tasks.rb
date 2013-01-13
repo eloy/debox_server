@@ -27,6 +27,28 @@ namespace 'auth' do
       STDOUT.puts user
     end
   end
+
+  desc 'Add admin privileges to a user'
+  task :user_make_admin do
+    STDOUT.puts "Email:  "
+    email = STDIN.gets.strip
+
+    dbox = DeboxServer::Core.new
+    dbox.users_make_admin! email
+    STDOUT.puts "\nUser #{email} is now an admin"
+  end
+
+  desc 'Remove admin privileges for a user'
+  task :user_remove_admin do
+    STDOUT.puts "Email:  "
+    email = STDIN.gets.strip
+
+    dbox = DeboxServer::Core.new
+    dbox.users_remove_admin! email
+    STDOUT.puts "\nUser is not an admin anymore"
+  end
+
+
 end
 
 # ssh keys management
