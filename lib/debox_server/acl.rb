@@ -21,6 +21,17 @@ module DeboxServer
       end
     end
 
+    def acl_allow?(app, env, user, action)
+      acl = acl_find app, env, user
+      return false unless acl
+      acl.each do |allowed|
+        if allowed == :* || allowed == action
+          return true
+        end
+      end
+      return false
+    end
+
     # Return the app acl key nane
     def acl_key_name(app, env)
       "acl_#{app}_#{env}"
