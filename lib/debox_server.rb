@@ -17,6 +17,8 @@ require "debox_server/recipes"
 require "debox_server/deploy_logs"
 require "debox_server/job"
 require "debox_server/deployer"
+require "debox_server/acl"
+
 require "debox_server/basic_auth"
 require "debox_server/view_helpers"
 
