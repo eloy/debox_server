@@ -6,9 +6,10 @@ def server
   @server ||= DeboxServer::Core.new
 end
 
-def create_user(email='test@indeos.es')
-  user = FakeServer.new.add_user email, 'secret'
-  return user
+def create_user(opt={ })
+  email = opt[:email] || 'test@indeos.es'
+  password = opt[:password] || 'secret'
+  return FakeServer.new.add_user email, password, opt
 end
 
 def login_user(user=create_user)
