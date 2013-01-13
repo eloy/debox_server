@@ -4,11 +4,11 @@ describe DeboxServer::ACL do
 
   let(:app) { 'app' }
   let(:env) {  'env' }
-  let(:user) {  'test@indeos.es' }
+  let(:user) {  create_user }
 
   describe 'acl_find' do
     it 'should find the app acl for the given user' do
-      DeboxServer::RedisDB::redis.hset server.acl_key_name(app, env), user, [:*, :cap].to_json
+      DeboxServer::RedisDB::redis.hset server.acl_key_name(app, env), user.email, [:*, :cap].to_json
       server.acl_find(app, env, user).should eq [:*, :cap]
     end
 

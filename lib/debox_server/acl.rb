@@ -8,7 +8,7 @@ module DeboxServer
     # Find the app acl for the given user.
     # Return nil if not found
     def acl_find(app, env, user)
-      acl = redis.hget acl_key_name(app, env), user
+      acl = redis.hget acl_key_name(app, env), user.email
       JSON.parse(acl).map(&:to_sym) if acl
     end
 
@@ -17,11 +17,12 @@ module DeboxServer
       acl = acl_find(app, env, user) || []
       unless acl.include? action
         acl << action
-        redis.hset acl_key_name(app, env), user, acl.to_json
+        redis.hset acl_key_name(app, env), user.email, acl.to_json
       end
     end
 
     def acl_allow?(app, env, user, action)
+      return true if user.admin
       acl = acl_find app, env, user
       return false unless acl
       acl.each do |allowed|
