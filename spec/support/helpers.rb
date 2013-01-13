@@ -2,6 +2,10 @@ class FakeServer
   include DeboxServer::App
 end
 
+def server
+  @server ||= DeboxServer::Core.new
+end
+
 def create_user(email='test@indeos.es')
   user = FakeServer.new.add_user email, 'secret'
   return user
