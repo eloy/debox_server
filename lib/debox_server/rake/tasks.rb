@@ -3,10 +3,10 @@ require 'rake'
 # User management
 #----------------------------------------------------------------------
 
-namespace 'auth' do
+namespace 'users' do
 
   desc 'create a user'
-  task :user_create do
+  task :create do
     STDOUT.puts "Email:  "
     email = STDIN.gets.strip
 
@@ -21,7 +21,7 @@ namespace 'auth' do
   end
 
   desc 'list users'
-  task :user_list  do
+  task :list  do
     dbox = DeboxServer::Core.new
     dbox.users_config.keys.each do |user|
       STDOUT.puts user
@@ -29,7 +29,7 @@ namespace 'auth' do
   end
 
   desc 'Add admin privileges to a user'
-  task :user_make_admin do
+  task :make_admin do
     STDOUT.puts "Email:  "
     email = STDIN.gets.strip
 
@@ -39,7 +39,7 @@ namespace 'auth' do
   end
 
   desc 'Remove admin privileges for a user'
-  task :user_remove_admin do
+  task :remove_admin do
     STDOUT.puts "Email:  "
     email = STDIN.gets.strip
 
