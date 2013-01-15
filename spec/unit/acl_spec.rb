@@ -42,6 +42,10 @@ describe DeboxServer::ACL do
       server.acl_allow?(app, env, user, :cap).should be_false
     end
 
+    it 'should return false if the user do not exists' do
+      server.acl_allow?(app, env, nil, :cap).should be_false
+    end
+
     it 'should return false in the current acl does not include the given action' do
       server.acl_add app, env, user, :recipes
       server.acl_allow?(app, env, user, :cap).should be_false

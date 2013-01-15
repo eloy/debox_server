@@ -22,6 +22,7 @@ module DeboxServer
     end
 
     def acl_allow?(app, env, user, action)
+      return false unless user
       return true if user.admin
       acl = acl_find app, env, user
       return false unless acl
