@@ -23,8 +23,11 @@ namespace 'users' do
   desc 'list users'
   task :list  do
     dbox = DeboxServer::Core.new
-    dbox.users_config.keys.each do |user|
-      STDOUT.puts user
+    STDOUT.puts "email\t\t\t\tapi_key\t\t\t\t\tAdmin"
+    dbox.users_config.values.each do |user_data|
+      user = JSON.parse user_data, symbolize_names: true
+      isAdmin = "YES" if user[:admin]
+      STDOUT.puts "#{user[:email]}\t\t\t#{user[:api_key]}\t#{isAdmin}"
     end
   end
 
@@ -47,7 +50,6 @@ namespace 'users' do
     dbox.users_remove_admin! email
     STDOUT.puts "\nUser is not an admin anymore"
   end
-
 
 end
 
