@@ -13,6 +13,7 @@ module DeboxServer
 
 
         helpers do
+
           def allowed?
             action = params[:action].to_sym
             user = current_user
@@ -26,9 +27,18 @@ module DeboxServer
               error!("User is not allowed to run this action", 403)
             end
           end
+
+          def add_action(action, user_id)
+            user = find_user user_id
+            error!("User not found", 400) unless user
+            acl_add current_app, current_env, user, action
+          end
         end
 
         resource :acl do
+
+          # allowed
+          #----------------------------------------------------------------------
 
           desc "Check if the user is authorized for a given action and env"
           params do
@@ -46,6 +56,29 @@ module DeboxServer
           end
           get '/allowed/:app' do
             allowed?
+          end
+
+          # actions
+          #----------------------------------------------------------------------
+
+          desc "Add action for a user to the app acl. Require admin access"
+          params do
+            requires :action, type: String, desc: "action for check authorization"
+            requires :user, type: String, desc: "optional user for check authorization."
+          end
+          post '/actions/:app/:env' do
+            add_action params[:action], params[:user]
+            "OK"
+          end
+
+          desc "Add action for a user to the app acl. Require admin access"
+          params do
+            requires :action, type: String, desc: "action for check authorization"
+            requires :user, type: String, desc: "optional user for check authorization."
+          end
+          post '/actions/:app' do
+            add_action params[:action], params[:user]
+            "OK"
           end
 
         end
