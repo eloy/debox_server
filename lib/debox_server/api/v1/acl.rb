@@ -28,6 +28,15 @@ module DeboxServer
             end
           end
 
+          def actions
+            user = current_user
+            # Admins can override users
+            if params[:user] && current_user.admin
+              user = find_user params[:user]
+            end
+            acl_find current_app, current_env, user
+          end
+
           def add_action(action, user_id)
             require_admin
             user = find_user user_id
@@ -51,8 +60,8 @@ module DeboxServer
 
           desc "Check if the user is authorized for a given action and env"
           params do
-            requires :action, type: String, desc: "action for check authorization"
-            optional :user, type: String, desc: "optional user for check authorization. Require admin access."
+            requires :action, type: String, desc: "action"
+            optional :user, type: String, desc: "optional user. Require admin access."
           end
           get '/allowed/:app/:env' do
             allowed?
@@ -60,11 +69,30 @@ module DeboxServer
 
           desc "Check if the user is authorized for a given action and default env"
           params do
-            requires :action, type: String, desc: "action for check authorization"
-            optional :user, type: String, desc: "optional user for check authorization. Require admin access."
+            requires :action, type: String, desc: "action"
+            optional :user, type: String, desc: "optional user. Require admin access."
           end
           get '/allowed/:app' do
             allowed?
+          end
+
+          # action index
+          #----------------------------------------------------------------------
+
+          desc "List actions for a user in the app acl."
+          params do
+            optional :user, type: String, desc: "optional user. Require admin access."
+          end
+          get '/actions/:app/:env' do
+            actions || []
+          end
+
+          desc "List actions for a user in the app acl."
+          params do
+            optional :user, type: String, desc: "optional user. Require admin access."
+          end
+          get '/actions/:app' do
+            actions || []
           end
 
           # add action
@@ -72,8 +100,8 @@ module DeboxServer
 
           desc "Add action for a user to the app acl. Require admin access"
           params do
-            requires :action, type: String, desc: "action for check authorization"
-            requires :user, type: String, desc: "optional user for check authorization."
+            requires :action, type: String, desc: "action"
+            requires :user, type: String, desc: "user."
           end
           post '/actions/:app/:env' do
             add_action params[:action], params[:user]
@@ -82,8 +110,8 @@ module DeboxServer
 
           desc "Add action for a user to the app acl. Require admin access"
           params do
-            requires :action, type: String, desc: "action for check authorization"
-            requires :user, type: String, desc: "optional user for check authorization."
+            requires :action, type: String, desc: "action"
+            requires :user, type: String, desc: "user."
           end
           post '/actions/:app' do
             add_action params[:action], params[:user]
@@ -95,8 +123,8 @@ module DeboxServer
 
           desc "Remove action for a user from the app acl. Require admin access"
           params do
-            requires :action, type: String, desc: "action for check authorization"
-            requires :user, type: String, desc: "optional user for check authorization."
+            requires :action, type: String, desc: "action"
+            requires :user, type: String, desc: "user."
           end
           delete '/actions/:app/:env' do
             remove_action params[:action], params[:user]
@@ -105,8 +133,8 @@ module DeboxServer
 
           desc "Remove action for a user from the app acl. Require admin access"
           params do
-            requires :action, type: String, desc: "action for check authorization"
-            requires :user, type: String, desc: "optional user for check authorization."
+            requires :action, type: String, desc: "action"
+            requires :user, type: String, desc: "user."
           end
           delete '/actions/:app' do
             remove_action params[:action], params[:user]
