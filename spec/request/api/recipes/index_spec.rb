@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe '/v1/recipes/:app/' do
   it 'should return an empty array without recipes' do
-    login_user
+    login_as_admin
     server = FakeServer.new
     get '/v1/recipes/test'
     last_response.should be_ok
@@ -11,7 +11,7 @@ describe '/v1/recipes/:app/' do
 
 
   it 'should return current recipes if any' do
-    login_user
+    login_as_admin
     server = FakeServer.new
     app = 'test'
     server.create_recipe(app, :staging, 'sample content')

@@ -9,7 +9,7 @@ describe '/v1/users/create' do
 
 
   it 'should create a user with valid credentials' do
-    login_user
+    login_as_admin
     post '/v1/users/create', user: 'new@indeos.es', password: 'secret'
     last_response.status.should eq 201
     last_response.body.should eq 'ok'

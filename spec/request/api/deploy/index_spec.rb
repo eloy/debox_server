@@ -3,7 +3,7 @@ require 'spec_helper'
 describe '/v1/deploy/:app/:env' do
 
   it 'should deal with invalid app' do
-    login_user
+    login_as_admin
     get '/v1/deploy/test/production'
     last_response.should_not be_ok
     last_response.body.should match 'App not found'
@@ -15,7 +15,7 @@ describe '/v1/deploy/:app/:env' do
 
     server = FakeServer.new
     server.create_recipe(app, env, 'load "invalid"')
-    login_user
+    login_as_admin
     get "/v1/deploy/#{app}/#{env}"
 
     last_response.should be_ok

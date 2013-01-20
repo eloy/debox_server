@@ -9,7 +9,7 @@ describe '/v1/logs/:app/:env' do
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
 
-    login_user
+    login_as_admin
     get '/v1/logs/test/production'
 
     last_response.should be_ok
@@ -28,7 +28,7 @@ describe '/v1/logs/:app/:env' do
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
 
-    login_user
+    login_as_admin
     get '/v1/logs/test'
     last_response.should be_ok
     data = JSON.parse last_response.body, symbolize_names: true

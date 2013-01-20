@@ -8,7 +8,7 @@ describe '/v1/cap/:app' do
   end
 
   it 'should deal with invalid @app' do
-    login_user
+    login_as_admin
     get '/v1/cap/test/production?task=deploy'
     last_response.should_not be_ok
     last_response.body.should match 'App not found'
@@ -17,7 +17,7 @@ describe '/v1/cap/:app' do
   it 'should set default task if not setted' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
-    login_user
+    login_as_admin
 
     get "/v1/cap/#{@app}/#{@env}"
 
@@ -31,7 +31,7 @@ describe '/v1/cap/:app' do
   it 'should use the given task if present' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
-    login_user
+    login_as_admin
     get "/v1/cap/#{@app}?task=node:restart"
     last_response.should be_ok
     job = JSON.parse last_response.body, symbolize_names: true
@@ -44,7 +44,7 @@ describe '/v1/cap/:app' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     server.create_recipe(@app, 'other', 'content')
-    login_user
+    login_as_admin
     get "/v1/cap/#{@app}"
     last_response.should_not be_ok
     last_response.body.should match 'Enviromnment must be set'
@@ -52,7 +52,7 @@ describe '/v1/cap/:app' do
 
   it 'should fail without env param and app not found' do
     server = FakeServer.new
-    login_user
+    login_as_admin
     get "/v1/cap/#{@app}"
     last_response.should_not be_ok
     last_response.body.should match 'App not found'
@@ -61,7 +61,7 @@ describe '/v1/cap/:app' do
   it 'should set default env if not setted' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
-    login_user
+    login_as_admin
     get "/v1/cap/#{@app}"
     last_response.should be_ok
     job = JSON.parse last_response.body, symbolize_names: true
@@ -73,7 +73,7 @@ describe '/v1/cap/:app' do
   it 'should deal with invalid recipe content' do
     server = FakeServer.new
     server.create_recipe(@app, @env, 'load "invalid"')
-    login_user
+    login_as_admin
     get "/v1/cap/#{@app}/#{@env}"
 
     last_response.should be_ok

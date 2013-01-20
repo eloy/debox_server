@@ -4,7 +4,7 @@ describe '/v1/log' do
   it 'should return invalid if log does not exists' do
     server = DeboxServer::Core.new
     server.create_recipe('test', 'production', 'content')
-    login_user
+    login_as_admin
     get '/v1/log/test/production'
     last_response.should_not be_ok
     last_response.body.should match 'Log not found'
@@ -17,7 +17,7 @@ describe '/v1/log' do
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
 
-    login_user
+    login_as_admin
     get '/v1/log/test/production'
     last_response.should be_ok
     last_response.body.should match 'Some log content'
@@ -31,7 +31,7 @@ describe '/v1/log' do
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
 
-    login_user
+    login_as_admin
     get '/v1/log/test'
     last_response.should be_ok
     last_response.body.should match 'Some log content'

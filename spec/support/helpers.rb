@@ -12,7 +12,18 @@ def create_user(opt={ })
   server.add_user email, password, opt
 end
 
-def login_user(user=create_user)
+def create_admin(opt={ })
+  email = opt[:email] || 'test@indeos.es'
+  password = opt[:password] || 'secret'
+  opt[:admin] = true # Ensure user will be an admin
+  server.add_user email, password, opt
+end
+
+def login_as_user(user=create_user)
+  authorize user.email, user.api_key
+end
+
+def login_as_admin(user=create_admin)
   authorize user.email, user.api_key
 end
 

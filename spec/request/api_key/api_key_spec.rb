@@ -16,7 +16,7 @@ describe '/api_key' do
 
 
   it 'should return token with valid credentials' do
-    user = create_user password: 'secret'
+    user = create_admin password: 'secret'
     get '/v1/api_key', user: user.email, password: 'secret'
     last_response.should be_ok
     last_response.body.should eq user.api_key

@@ -8,8 +8,8 @@ describe '/v1/users' do
 
 
   it 'should revceive a users list' do
-    user = create_user
-    login_user user
+    user = create_admin
+    login_as_admin user
 
     get '/v1/users'
     last_response.should be_ok
