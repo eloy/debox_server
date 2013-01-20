@@ -7,16 +7,16 @@ def server
 end
 
 def create_user(opt={ })
-  email = opt[:email] || 'test@indeos.es'
+  @user_id_counter ||= 0
+  id = @user_id_counter += 1
+  email = opt[:email] || "user_#{id}@indeos.es"
   password = opt[:password] || 'secret'
   server.add_user email, password, opt
 end
 
 def create_admin(opt={ })
-  email = opt[:email] || 'test@indeos.es'
-  password = opt[:password] || 'secret'
   opt[:admin] = true # Ensure user will be an admin
-  server.add_user email, password, opt
+  create_user opt
 end
 
 def login_as_user(user=create_user)
