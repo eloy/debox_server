@@ -1,6 +1,16 @@
 require 'spec_helper'
 
 describe 'POST /v1/acl/role/' do
+
+  it 'should fail if logged user is not an admin' do
+    user = create_user
+    server.create_recipe('test', 'prod', 'content')
+    login_as_user user
+    post "/v1/acl/actions/test", user: user.email, action: 'cap'
+    last_response.status.should eq 401
+    server.acl_find('test', 'prod', user).should be_nil
+  end
+
   context 'withount env' do
     it 'should add the role to the user' do
       user = create_user

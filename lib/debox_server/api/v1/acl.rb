@@ -29,6 +29,7 @@ module DeboxServer
           end
 
           def add_action(action, user_id)
+            require_admin
             user = find_user user_id
             error!("User not found", 400) unless user
             acl_add current_app, current_env, user, action
