@@ -34,6 +34,14 @@ module DeboxServer
             error!("User not found", 400) unless user
             acl_add current_app, current_env, user, action
           end
+
+          def remove_action(action, user_id)
+            require_admin
+            user = find_user user_id
+            error!("User not found", 400) unless user
+            acl_remove current_app, current_env, user, action.to_sym
+          end
+
         end
 
         resource :acl do
@@ -59,7 +67,7 @@ module DeboxServer
             allowed?
           end
 
-          # actions
+          # add action
           #----------------------------------------------------------------------
 
           desc "Add action for a user to the app acl. Require admin access"
@@ -82,6 +90,28 @@ module DeboxServer
             "OK"
           end
 
+          # remove action
+          #----------------------------------------------------------------------
+
+          desc "Remove action for a user from the app acl. Require admin access"
+          params do
+            requires :action, type: String, desc: "action for check authorization"
+            requires :user, type: String, desc: "optional user for check authorization."
+          end
+          delete '/actions/:app/:env' do
+            remove_action params[:action], params[:user]
+            "OK"
+          end
+
+          desc "Remove action for a user from the app acl. Require admin access"
+          params do
+            requires :action, type: String, desc: "action for check authorization"
+            requires :user, type: String, desc: "optional user for check authorization."
+          end
+          delete '/actions/:app' do
+            remove_action params[:action], params[:user]
+            "OK"
+          end
         end
 
       end
