@@ -34,7 +34,26 @@ describe DeboxServer::ACL do
       server.acl_add app, env, user, :cap
       server.acl_find(app, env, user).should eq [:cap]
     end
+  end
 
+  describe 'acl_remove' do
+    it 'should create an acl with the given action' do
+      server.acl_add app, env, user, :cap
+      server.acl_remove app, env, user, :cap
+      server.acl_find(app, env, user).should eq []
+    end
+
+    it 'should remove actions to the current acl' do
+      server.acl_add app, env, user, :cap
+      server.acl_add app, env, user, :recipes
+      server.acl_remove app, env, user, :cap
+      server.acl_find(app, env, user).should eq [:recipes]
+    end
+
+    it 'should not fail if action is not present' do
+      server.acl_remove app, env, user, :cap
+      server.acl_find(app, env, user).should be_nil
+    end
   end
 
   describe 'acl_allow?' do

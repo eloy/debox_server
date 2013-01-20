@@ -21,6 +21,15 @@ module DeboxServer
       end
     end
 
+    # Remove an action from the app acl for the given user
+    def acl_remove(app, env, user, action)
+      acl = acl_find(app, env, user) || []
+      if acl.include? action
+        acl.delete action
+        redis.hset acl_key_name(app, env), user.email, acl.to_json
+      end
+    end
+
     def acl_allow?(app, env, user, action)
       return false unless user
       return true if user.admin
