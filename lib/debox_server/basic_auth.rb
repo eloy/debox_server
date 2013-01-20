@@ -20,5 +20,9 @@ module DeboxServer
       current_user != false
     end
 
+    def require_admin
+      error!("Access Denied", 401) unless current_user.admin
+    end
+
   end
 end
