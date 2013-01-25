@@ -33,7 +33,7 @@ module DeboxServer
               end
 
               before_close do
-                DeboxServer.log.info "Closed connection to #{app} #{env}"
+                DeboxServer.log.debug "Closed connection to #{app} #{env}"
                 @job.unsubscribe @sid if @job
               end
 
