@@ -3,6 +3,13 @@ require 'rake'
 # User management
 #----------------------------------------------------------------------
 
+
+RACK_ENV = ENV['RACK_ENV'] || 'development'
+
+def debox
+  @debox_server ||= DeboxServer::Core.new
+end
+
 namespace 'users' do
 
   desc 'create a user'
@@ -79,4 +86,42 @@ namespace 'ssh' do
     DeboxServer::SshKeys.ssh_keys_export
     STDOUT.puts "\nKeys exported."
   end
+end
+
+
+# Database
+#----------------------------------------------------------------------
+
+namespace :db do
+  desc "loads database configuration in for other tasks to run"
+  task :load_config do
+    ActiveRecord::Base.configurations = debox.db_conf
+    ActiveRecord::Base.establish_connection debox.db_conf[RACK_ENV]
+  end
+
+  desc "creates and migrates your database"
+  task :setup => :load_config do
+    Rake::Task["db:create"].invoke
+    Rake::Task["db:migrate"].invoke
+  end
+
+  desc "migrate your database"
+  task :migrate => :load_config do
+    ActiveRecord::Migrator.migrate(
+      ActiveRecord::Migrator.migrations_paths,
+      ENV["VERSION"] ? ENV["VERSION"].to_i : nil
+    )
+  end
+
+  desc 'Drops the database'
+  task :drop => :load_config do
+    ActiveRecord::Base.connection.drop_database debox.db_conf[RACK_ENV]['database']
+  end
+
+  desc 'Creates the database'
+  task :create do
+    ActiveRecord::Base.establish_connection debox.db_conf[RACK_ENV].merge('database'=>nil)
+    ActiveRecord::Base.connection.create_database debox.db_conf[RACK_ENV]['database']
+  end
+
 end
