@@ -19,16 +19,6 @@ module DeboxServer
           end
         end
 
-        desc "DEPRECATED. Desploy an app."
-        get "/deploy/:app/:env" do
-          run_cap_task(current_app, current_env, params[:task] || 'deploy')
-        end
-
-        desc "DEPRECATED. Desploy an app."
-        get "/deploy/:app/:env/:task" do
-          run_cap_task(current_app, current_env, params[:task] || 'deploy')
-        end
-
         desc "Run a capistrano task for a on a given app if only one env configured"
         get "/cap/:app" do
           run_cap_task(current_app, current_env, params[:task] || 'deploy')
