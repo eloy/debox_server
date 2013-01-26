@@ -91,6 +91,7 @@ module ThrowEventSource
     body.push "data: job finished\n"
     body.push "event: finish\n"
     body.push "\n"
+    body.succeed
   end
 
   def keep_alive(timeout=5)

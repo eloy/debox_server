@@ -6,6 +6,12 @@ require 'bundler'
 
 Bundler.require
 require 'rack/test'
+require 'debox_server/test_helper'
+
+# Prepare capybara
+require 'capybara/rspec'
+require 'capybara/webkit'
+Capybara.app = DeboxServer::DeboxAPI
 
 def app
   DeboxServer::DeboxAPI
@@ -22,4 +28,11 @@ RSpec.configure do |config|
   end
 
   config.include Rack::Test::Methods
+
+  # Setup capybara
+  Capybara.javascript_driver = :webkit
+  Capybara.server_boot_timeout = 50
+  Capybara.server_port = 8082
+  Capybara.default_wait_time = 5
+
 end
