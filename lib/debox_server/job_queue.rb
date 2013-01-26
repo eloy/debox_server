@@ -27,7 +27,7 @@ module DeboxServer
     end
 
     def schedule_job(job)
-      DeboxServer::Deployer::add_job_to_queue job
+      DeboxServer::JobQueue::add_job_to_queue job
     end
 
     def self.next_job_id

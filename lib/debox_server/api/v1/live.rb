@@ -19,7 +19,7 @@ module DeboxServer
           def live_log(app, env)
             async do
               DeboxServer.log.info "New live connection to #{app} #{env}"
-              @job = DeboxServer::Deployer::running_job app, env
+              @job = DeboxServer::JobQueue::running_job app, env
               if @job && (params[:job_id].nil? || params[:job_id] == @job.id)
                 keep_alive # Keep alive the connection sending empty packages
                 chunk @job.buffer unless @job.buffer.empty? # Show current buffer
