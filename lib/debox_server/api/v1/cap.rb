@@ -15,7 +15,7 @@ module DeboxServer
         helpers do
           def run_cap_task(app, env, task='deploy')
             job = Job.new(app, env, task)
-            schedule_job(job)
+            job_queue.add(job)
             { job_id: job.id , app: app, env: env, task: task }
           end
         end
