@@ -16,7 +16,7 @@ require "debox_server/users"
 require "debox_server/recipes"
 require "debox_server/deploy_logs"
 require "debox_server/job"
-require "debox_server/deployer"
+require "debox_server/job_queue"
 require "debox_server/acl"
 
 require "debox_server/basic_auth"

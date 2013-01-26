@@ -9,7 +9,7 @@ module DeboxServer
     include DeboxServer::Users
     include DeboxServer::Recipes
     include DeboxServer::DeployLogs
-    include DeboxServer::Deployer
+    include DeboxServer::JobQueue
     include DeboxServer::ACL
   end
 

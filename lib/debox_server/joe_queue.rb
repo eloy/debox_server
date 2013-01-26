@@ -2,7 +2,7 @@ require 'capistrano'
 require 'capistrano/cli'
 
 module DeboxServer
-  module Deployer
+  module JobQueue
     include DeboxServer::Recipes
     include DeboxServer::RedisDB
 
