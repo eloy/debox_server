@@ -9,6 +9,7 @@ module DeboxServer
 
         before do
           authenticate!
+          require_admin
         end
 
         resource :users do

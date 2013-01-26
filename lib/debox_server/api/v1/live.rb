@@ -10,6 +10,7 @@ module DeboxServer
 
         before do
           authenticate!
+          require_auth_for :logs
         end
 
         helpers do

@@ -7,6 +7,13 @@ describe '/v1/cap/:app' do
     @env = 'production'
   end
 
+  it 'should fail withhout access' do
+    login_as_user
+    server.create_recipe(@app, @env, 'content')
+    get '/v1/cap/test/production?task=deploy'
+    last_response.status.should eq 403
+  end
+
   it 'should deal with invalid @app' do
     login_as_admin
     get '/v1/cap/test/production?task=deploy'

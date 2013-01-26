@@ -9,6 +9,7 @@ module DeboxServer
 
         before do
           authenticate!
+          require_auth_for :cap
         end
 
         helpers do

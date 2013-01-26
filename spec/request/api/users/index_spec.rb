@@ -6,6 +6,12 @@ describe '/v1/users' do
     last_response.status.should eq 401
   end
 
+  it 'should return forbidden without auth' do
+    login_as_user
+    get '/v1/users'
+    last_response.status.should eq 403
+  end
+
 
   it 'should revceive a users list' do
     user = create_admin
