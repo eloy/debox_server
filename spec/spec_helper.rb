@@ -17,6 +17,10 @@ def app
   DeboxServer::DeboxAPI
 end
 
+# Set debug level to error
+# TODO: Set by conf anywhere
+DeboxServer::log.level = Log4r::ERROR
+
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
