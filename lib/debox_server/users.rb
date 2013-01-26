@@ -19,21 +19,38 @@ module DeboxServer
       return user_data
     end
 
+    def users_find!(email)
+      redis.hget('users', email)
+    end
+
     def find_user(email)
-      user = redis.hget('users', email)
-      if user
-        OpenStruct.new JSON.parse(user)
-      else
-        false
-      end
+      user = users_find! email
+      return OpenStruct.new JSON.parse(user) if user
     end
 
     def add_user(email, password, opt={})
       api_key = opt[:api_key] || generate_uuid
       user = { email: email, password: hash_str(password), api_key: api_key }
+      user[:admin] = true if opt[:admin]
       redis.hsetnx 'users', email, user.to_json
       redis.save
       return OpenStruct.new user
+    end
+
+    def users_make_admin!(email)
+      user_data = users_find!(email)
+      return false unless user_data
+      user = JSON.parse user_data
+      user['admin'] = true
+      redis.hset 'users', email, user.to_json
+    end
+
+    def users_remove_admin!(email)
+      user_data = users_find!(email)
+      return false unless user_data
+      user = JSON.parse user_data
+      user['admin'] = false
+      redis.hset 'users', email, user.to_json
     end
 
     def users_destroy(email)

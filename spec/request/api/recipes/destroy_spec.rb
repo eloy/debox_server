@@ -4,7 +4,7 @@ describe '/v1/recipes/:app/:env/destroy' do
 
 
   it 'should destroy the recipe if exists' do
-    login_user
+    login_as_admin
     server = FakeServer.new
     server.create_recipe('test', :staging, 'sample content')
     server.create_recipe('test', :production, 'sample content')

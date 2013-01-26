@@ -1,7 +1,7 @@
 require 'spec_helper'
 describe '/v1/apps' do
   it 'should return an empty array without apps' do
-    login_user
+    login_as_admin
     server = FakeServer.new
     get '/v1/apps'
     last_response.should be_ok
@@ -10,7 +10,7 @@ describe '/v1/apps' do
 
 
   it 'should return current apps if any' do
-    login_user
+    login_as_admin
     server = FakeServer.new
 
     server.apps_create 'test'

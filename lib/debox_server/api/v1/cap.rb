@@ -9,6 +9,7 @@ module DeboxServer
 
         before do
           authenticate!
+          require_auth_for :cap
         end
 
         helpers do
@@ -17,16 +18,6 @@ module DeboxServer
             schedule_job(job)
             { job_id: job.id , app: app, env: env, task: task }
           end
-        end
-
-        desc "DEPRECATED. Desploy an app."
-        get "/deploy/:app/:env" do
-          run_cap_task(current_app, current_env, params[:task] || 'deploy')
-        end
-
-        desc "DEPRECATED. Desploy an app."
-        get "/deploy/:app/:env/:task" do
-          run_cap_task(current_app, current_env, params[:task] || 'deploy')
         end
 
         desc "Run a capistrano task for a on a given app if only one env configured"

@@ -10,6 +10,7 @@ module DeboxServer
     include DeboxServer::Recipes
     include DeboxServer::DeployLogs
     include DeboxServer::Deployer
+    include DeboxServer::ACL
   end
 
   class Core

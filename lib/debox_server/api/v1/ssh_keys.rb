@@ -9,6 +9,7 @@ module DeboxServer
 
         before do
           authenticate!
+          require_admin
         end
 
         desc "Return the public rsa key for the debox user"

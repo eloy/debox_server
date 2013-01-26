@@ -2,17 +2,33 @@ class FakeServer
   include DeboxServer::App
 end
 
-def create_user(email='test@indeos.es')
-  user = FakeServer.new.add_user email, 'secret'
-  return user
+def server
+  @server ||= DeboxServer::Core.new
 end
 
-def login_user(user=create_user)
+def create_user(opt={ })
+  @user_id_counter ||= 0
+  id = @user_id_counter += 1
+  email = opt[:email] || "user_#{id}@indeos.es"
+  password = opt[:password] || 'secret'
+  server.add_user email, password, opt
+end
+
+def create_admin(opt={ })
+  opt[:admin] = true # Ensure user will be an admin
+  create_user opt
+end
+
+def login_as_user(user=create_user)
+  authorize user.email, user.api_key
+end
+
+def login_as_admin(user=create_admin)
   authorize user.email, user.api_key
 end
 
 def find_user(email)
-  FakeServer.new.find_user email
+  server.find_user email
 end
 
 def hash_str(str)

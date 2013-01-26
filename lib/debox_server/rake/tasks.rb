@@ -3,10 +3,10 @@ require 'rake'
 # User management
 #----------------------------------------------------------------------
 
-namespace 'auth' do
+namespace 'users' do
 
   desc 'create a user'
-  task :user_create do
+  task :create do
     STDOUT.puts "Email:  "
     email = STDIN.gets.strip
 
@@ -21,12 +21,36 @@ namespace 'auth' do
   end
 
   desc 'list users'
-  task :user_list  do
+  task :list  do
     dbox = DeboxServer::Core.new
-    dbox.users_config.keys.each do |user|
-      STDOUT.puts user
+    STDOUT.puts "email\t\t\t\tapi_key\t\t\t\t\tAdmin"
+    dbox.users_config.values.each do |user_data|
+      user = JSON.parse user_data, symbolize_names: true
+      isAdmin = "YES" if user[:admin]
+      STDOUT.puts "#{user[:email]}\t\t\t#{user[:api_key]}\t#{isAdmin}"
     end
   end
+
+  desc 'Add admin privileges to a user'
+  task :make_admin do
+    STDOUT.puts "Email:  "
+    email = STDIN.gets.strip
+
+    dbox = DeboxServer::Core.new
+    dbox.users_make_admin! email
+    STDOUT.puts "\nUser #{email} is now an admin"
+  end
+
+  desc 'Remove admin privileges for a user'
+  task :remove_admin do
+    STDOUT.puts "Email:  "
+    email = STDIN.gets.strip
+
+    dbox = DeboxServer::Core.new
+    dbox.users_remove_admin! email
+    STDOUT.puts "\nUser is not an admin anymore"
+  end
+
 end
 
 # ssh keys management
