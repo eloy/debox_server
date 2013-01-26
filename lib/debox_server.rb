@@ -16,16 +16,27 @@ require "debox_server/users"
 require "debox_server/recipes"
 require "debox_server/deploy_logs"
 require "debox_server/job"
+require "debox_server/job_notifier"
 require "debox_server/job_queue"
 require "debox_server/acl"
-
-require "debox_server/basic_auth"
-require "debox_server/view_helpers"
-
-require "debox_server/core"
-
-require "debox_server/api"
 
 
 # TODO get root without the ../
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
+
+module DeboxServer
+  include DeboxServer::Utils
+  include DeboxServer::Config
+  include DeboxServer::RedisDB
+  include DeboxServer::SshKeys
+  include DeboxServer::Apps
+  include DeboxServer::Users
+  include DeboxServer::Recipes
+  include DeboxServer::DeployLogs
+  include DeboxServer::ACL
+end
+
+
+class DeboxServerCore
+  include DeboxServer
+end

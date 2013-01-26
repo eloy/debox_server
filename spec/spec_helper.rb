@@ -6,11 +6,13 @@ require 'bundler'
 
 Bundler.require
 require 'rack/test'
+require "debox_server/api"
 require 'debox_server/test_helper'
 
 # Prepare capybara
 require 'capybara/rspec'
 require 'capybara/webkit'
+
 Capybara.app = DeboxServer::DeboxAPI
 
 def app

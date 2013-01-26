@@ -1,10 +1,10 @@
 require 'base64'
 class FakeServer
-  include DeboxServer::App
+  include DeboxServer
 end
 
 def server
-  @server ||= DeboxServer::Core.new
+  @server ||= DeboxServerCore.new
 end
 
 def create_user(opt={ })

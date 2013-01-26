@@ -1,3 +1,6 @@
+require "debox_server/basic_auth"
+require "debox_server/view_helpers"
+
 # Require controllers
 Dir[File.join(File.dirname(__FILE__), "api/v1/", "*.rb")].each do |file|
   require file
@@ -7,7 +10,7 @@ module DeboxServer
 
   class DeboxAPI < Grape::API
 
-    helpers DeboxServer::App
+    helpers DeboxServer
     helpers DeboxServer::BasicAuth
     helpers DeboxServer::ViewHelpers
 

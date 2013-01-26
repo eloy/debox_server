@@ -4,7 +4,6 @@ describe 'DeboxServer::DeployLogs#save_deploy_logs' do
   it 'should store the given log data' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: false, buffer: 'Some log content', result: 'Log result', error: 'Log result'
-    server = DeboxServer::Core.new
 
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
@@ -21,7 +20,6 @@ describe 'DeboxServer::DeployLogs#save_deploy_logs' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content', result: 'Log result'
     last = OpenStruct.new time: time, success: true, buffer: 'Last log content', result: 'Log result'
-    server = DeboxServer::Core.new
     app = 'test'
     env = 'production'
 
@@ -44,7 +42,6 @@ describe 'DeboxServer::DeployLogs#deployer_logs' do
   it 'should return current logs if present' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content'
-    server = DeboxServer::Core.new
 
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
@@ -63,7 +60,6 @@ describe 'DeboxServer::DeployLogs#deployer_logs_at' do
   it 'should return log at a given index if present' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content'
-    server = DeboxServer::Core.new
     job = stubbed_job 'test', 'production', 'deploy', out
     job.save_log
     saved = server.deployer_logs_at 'test', 'production', 0
@@ -76,7 +72,6 @@ describe 'DeboxServer::DeployLogs#deployer_logs_at' do
   it 'should return nil if log not exists' do
     time = DateTime.now
     out = OpenStruct.new time: time, success: true, buffer: 'Some log content'
-    server = DeboxServer::Core.new
     server.deployer_logs_at('test', 'production', 0).should be_nil
   end
 
