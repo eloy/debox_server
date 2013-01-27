@@ -8,7 +8,7 @@ module DeboxServer
   end
 
   def self.jobs_queue
-    @@jobs_queue ||= JobQueue.new
+    @@jobs_queue ||= JobsQueue.new
   end
 
   class JobsQueue
