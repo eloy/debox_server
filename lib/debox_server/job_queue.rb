@@ -15,67 +15,68 @@ module DeboxServer
 
     include DeboxServer::Recipes
     include DeboxServer::RedisDB
-    include DeboxServer::JobNotifier
+    include DeboxServer::Logger
 
-    def queues
-      @queues ||= { }
-    end
 
-    def running
-      @running ||= {}
-    end
-
-    def queue_empty?(app, env)
-      running.has_key? queue_name(app, env)
-    end
-
-    def job_running?(app, env, job_id)
-      name = queue_name(app, env)
-      return false unless running.has_key? name
-      running[name].id == job_id
+    def jobs
+      @queued_jobs ||= []
     end
 
     # Return the job running just now
-    def find(app, env)
-      name = queue_name(app, env)
-      return false unless running.has_key? name
-      running[name]
+    def find(id)
+      jobs.select {|job| job.id == id}.first
     end
 
     # Add a job to the queue
     def add(job)
-      EM::next_tick { deploy_queue(job.app, job.env).push job }
+      jobs.push job
+      notifier.added job
+      EM::next_tick do
+        queue(job.app, job.env).push job
+      end
     end
 
     # Generate id for the new job
     def next_job_id
-      RedisDB::redis.incr(:next_job_id)
+      redis.incr(:next_job_id)
     end
 
-    def deploy_queue(app, env)
-      queues[queue_name(app, env)] ||= deploy_queue_create
+    private
+
+    def queue(app, env)
+      queues[queue_name(app, env)] ||= new_queue
     end
 
     def queue_name(app, env)
       "#{app}_#{env}".to_sym
     end
 
+    def notifier
+      @notifier ||= JobNotifier.new
+    end
+
+    def queues
+      @queues ||= { }
+    end
+
+
     # Create a new EM::Queue and start the pop process
-    def deploy_queue_create
+    def new_queue
       queue = EM::Queue.new
       processor = proc { |job|
         name = queue_name job.app, job.env
-        running[name] = job
-        DeboxServer::log.info "Starting job #{job.id}"
+        log.debug "Starting job #{job.id}"
 
         callback = proc do |job|
-          running.delete name
-          DeboxServer::log.info "Job #{job.id} finished"
+          log.debug "Job #{job.id} finished"
+          notifier.stoped job
+          jobs.delete job
           # Pop next job or wait for other
           queue.pop(&processor)
         end
 
-        EM::defer proc { job.deploy }, callback
+        notifier.started job
+        EM::defer proc { job.start }, callback
       }
 
       # Pop first element for start the process

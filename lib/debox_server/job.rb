@@ -19,7 +19,7 @@ module DeboxServer
       @running = false
     end
 
-    def deploy
+    def start
       execute_task
       save_log
       trigger_on_finish
@@ -50,7 +50,7 @@ module DeboxServer
     # Save capistrano logs in redis
     def save_log
       begin
-        redis.lpush log_key_name(app, env), job_info.to_json
+        redis.lpush log_key_name(app, env), info.to_json
 
         # Remove last logs
         if deployer_logs_count(app, env) > MAX_LOGS_COUNT
@@ -64,13 +64,14 @@ module DeboxServer
 
     # Return info about the job
     # Used for generate the log
-    def job_info
+    def info
       { job_id: self.id,
         app: app,
         env: env,
         task: task,
         time: stdout.time,
-        success: stdout.success,
+        running: @running,
+        success: stdout.success || false,
         status: stdout.success ? "success" : "error",
         log: stdout.buffer || '** EMPTY BUFFER ** ',
         error: stdout.error || '',
