@@ -3,15 +3,15 @@ require 'capistrano/cli'
 
 module DeboxServer
 
-  def job_queue
-    DeboxServer::job_queue
+  def jobs_queue
+    DeboxServer::jobs_queue
   end
 
-  def self.job_queue
-    @@job_queue ||= JobQueue.new
+  def self.jobs_queue
+    @@jobs_queue ||= JobQueue.new
   end
 
-  class JobQueue
+  class JobsQueue
 
     include DeboxServer::Recipes
     include DeboxServer::RedisDB

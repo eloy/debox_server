@@ -18,7 +18,7 @@ module DeboxServer
           def job_live_log(id)
             async do
               log.info "Live connection to job ##{id}"
-              job = job_queue.find id.to_i
+              job = jobs_queue.find id.to_i
               if job
                 keep_alive # Keep alive the connection sending empty packages
                 chunk job.buffer unless job.buffer.empty? # Show current buffer

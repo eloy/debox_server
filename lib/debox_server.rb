@@ -17,7 +17,7 @@ require "debox_server/recipes"
 require "debox_server/deploy_logs"
 require "debox_server/job"
 require "debox_server/job_notifier"
-require "debox_server/job_queue"
+require "debox_server/jobs_queue"
 require "debox_server/acl"
 
 

@@ -11,7 +11,7 @@ module DeboxServer
     attr_reader :id, :app, :env, :task
 
     def initialize(app, env, task)
-      @id = DeboxServer::job_queue.next_job_id
+      @id = DeboxServer::jobs_queue.next_job_id
       @app = app
       @env = env
       @task = task
