@@ -49,14 +49,6 @@ module DeboxServer
             job_live_log params[:id]
           end
 
-          # get '/log/:app/:env' do
-          #   live_log current_app, current_env
-          # end
-
-          # get '/log/:app' do
-          #   live_log current_app, current_env
-          # end
-
         end
       end
     end
