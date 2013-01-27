@@ -25,6 +25,7 @@ require "debox_server/acl"
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
 
 module DeboxServer
+  include DeboxServer::Logger
   include DeboxServer::Utils
   include DeboxServer::Config
   include DeboxServer::RedisDB
