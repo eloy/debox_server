@@ -9,7 +9,7 @@ module DeboxServer
         version 'v1'
 
         before do
-          authenticate!
+          # authenticate!
         end
 
         helpers do
@@ -20,13 +20,17 @@ module DeboxServer
               log.info "Live connection to job ##{id}"
               job = jobs_queue.find id.to_i
               if job
-                keep_alive # Keep alive the connection sending empty packages
                 chunk job.buffer unless job.buffer.empty? # Show current buffer
 
-                sid = job.subscribe{ |l| chunk l }
+                unless job.finished?
+                  keep_alive # Keep alive the connection sending empty packages
+                  sid = job.subscribe{ |l| chunk l }
 
-                job.on_finish do
-                  job.unsubscribe sid
+                  job.on_finish do
+                    job.unsubscribe sid
+                    close
+                  end
+                else
                   close
                 end
 
@@ -42,6 +46,17 @@ module DeboxServer
 
             end
           end
+
+          def live_notifications
+            async do
+              keep_alive
+              sid = jobs_queue.channel.subscribe { |l| chunk l; log.debug l }
+
+              before_close do
+                jobs_queue.channel.unsubscribe sid
+              end
+            end
+          end
         end
 
         resource :live do
@@ -49,6 +64,9 @@ module DeboxServer
             job_live_log params[:id]
           end
 
+          get 'notifications' do
+            live_notifications
+          end
         end
       end
     end

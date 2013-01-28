@@ -1,6 +1,6 @@
 module DeboxServer
   class JobNotifier
-
+    include DeboxServer::Logger
     def channel
       @channel ||= EM::Channel.new
     end

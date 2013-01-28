@@ -17,6 +17,7 @@ module DeboxServer
       @task = task
       @recipe = recipe_content app, env
       @running = false
+      @finished = false
     end
 
     def start
@@ -44,6 +45,7 @@ module DeboxServer
         return false
       ensure
         @running = false
+        @finished = true
       end
     end
 
@@ -90,6 +92,10 @@ module DeboxServer
 
     def running?
       @running
+    end
+
+    def finished?
+      @finished
     end
 
     # callbacks

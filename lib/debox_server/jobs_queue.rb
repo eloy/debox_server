@@ -41,6 +41,10 @@ module DeboxServer
       redis.incr(:next_job_id)
     end
 
+    def channel
+      notifier.channel
+    end
+
     private
 
     def queue(app, env)
