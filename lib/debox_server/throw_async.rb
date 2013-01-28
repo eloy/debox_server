@@ -96,7 +96,7 @@ module ThrowEventSource
 
   def keep_alive(timeout=5)
     @timer = EM::PeriodicTimer.new(timeout) do
-      body.push ":"
+      body.push ":\n"
     end
   end
 
