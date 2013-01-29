@@ -8,12 +8,15 @@ module DeboxServer
     private
 
     def method_missing(method_name, *args)
-      send_notification method_name, args[0]
+      job = args[0]
+      opt = args[1] || { }
+      send_notification method_name, job, opt
     end
 
-    def send_notification(notification, job)
-      msg = {notification: notification, job: job.info}.to_json
-      channel.push msg
+    def send_notification(notification, job, opt={ })
+      msg = {notification: notification, job: job.info}
+      msg.merge! opt
+      channel.push msg.to_json
     end
 
   end

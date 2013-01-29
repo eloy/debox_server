@@ -45,6 +45,10 @@ module DeboxServer
       notifier.channel
     end
 
+        def notifier
+      @notifier ||= JobNotifier.new
+    end
+
     private
 
     def queue(app, env)
@@ -53,10 +57,6 @@ module DeboxServer
 
     def queue_name(app, env)
       "#{app}_#{env}".to_sym
-    end
-
-    def notifier
-      @notifier ||= JobNotifier.new
     end
 
     def queues
@@ -74,12 +74,17 @@ module DeboxServer
         callback = proc do |job|
           log.debug "Job #{job.id} finished"
           notifier.stoped job
-          jobs.delete job
+          jobs.delete job # Remove job from jobs queue
           # Pop next job or wait for other
           queue.pop(&processor)
         end
 
         notifier.started job
+
+        # Subscribe to stdout for send notifications
+        job.subscribe do |msg|
+          notifier.stdout job, data: msg
+        end
         EM::defer proc { job.start }, callback
       }
 

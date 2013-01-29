@@ -18,11 +18,13 @@ module DeboxServer
       @recipe = recipe_content app, env
       @running = false
       @finished = false
+      @subscribed_ids = []
     end
 
     def start
       execute_task
       save_log
+      unsubscribe_all
       trigger_on_finish
       return self
     end
@@ -30,6 +32,7 @@ module DeboxServer
     # Load the recipe and execute the task
     def execute_task
       @running = true
+      @start_time = DateTime.now
       begin
 
         # Load the recipe content
@@ -46,13 +49,16 @@ module DeboxServer
       ensure
         @running = false
         @finished = true
+        @end_time = DateTime.now
       end
     end
 
     # Save capistrano logs in redis
     def save_log
       begin
-        redis.lpush log_key_name(app, env), info.to_json
+        job_log = info
+        job_log[:log] = stdout.buffer || "** EMPTY BUFFER **"
+        redis.lpush log_key_name(app, env), job_log.to_json
 
         # Remove last logs
         if deployer_logs_count(app, env) > MAX_LOGS_COUNT
@@ -71,11 +77,11 @@ module DeboxServer
         app: app,
         env: env,
         task: task,
-        time: stdout.time,
+        start_time: @start_time,
+        end_time: @end_time,
         running: @running,
         success: stdout.success || false,
         status: stdout.success ? "success" : "error",
-        log: stdout.buffer || '** EMPTY BUFFER ** ',
         error: stdout.error || '',
         config: {
           revision: capistrano[:real_revision],
@@ -103,11 +109,18 @@ module DeboxServer
 
 
     def subscribe(&block)
-      stdout.channel.subscribe block
+      sid = stdout.channel.subscribe block
+      @subscribed_ids << sid
     end
 
     def unsubscribe(sid)
       stdout.channel.unsubscribe sid
+    end
+
+    def unsubscribe_all
+      @subscribed_ids.each do |sid|
+        stdout.channel.unsubscribe sid
+      end
     end
 
     def on_finish(&block)

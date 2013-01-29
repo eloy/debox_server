@@ -25,9 +25,7 @@ module DeboxServer
                 unless job.finished?
                   keep_alive # Keep alive the connection sending empty packages
                   sid = job.subscribe{ |l| chunk l }
-
                   job.on_finish do
-                    job.unsubscribe sid
                     close
                   end
                 else
