@@ -45,7 +45,7 @@ module DeboxServer
       notifier.channel
     end
 
-        def notifier
+    def notifier
       @notifier ||= JobNotifier.new
     end
 
@@ -73,7 +73,7 @@ module DeboxServer
 
         callback = proc do |job|
           log.debug "Job #{job.id} finished"
-          notifier.stoped job
+          notifier.finished job
           jobs.delete job # Remove job from jobs queue
           # Pop next job or wait for other
           queue.pop(&processor)
