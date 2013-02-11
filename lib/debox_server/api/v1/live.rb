@@ -9,7 +9,7 @@ module DeboxServer
         version 'v1'
 
         before do
-          # authenticate!
+          authenticate!
         end
 
         helpers do
@@ -48,7 +48,7 @@ module DeboxServer
           def live_notifications
             async do
               keep_alive
-              sid = jobs_queue.channel.subscribe { |l| chunk l; log.debug l }
+              sid = jobs_queue.channel.subscribe { |l| chunk l }
 
               before_close do
                 jobs_queue.channel.unsubscribe sid
