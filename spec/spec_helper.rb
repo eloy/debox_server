@@ -37,7 +37,7 @@ RSpec.configure do |config|
 
   # Setup capybara
   Capybara.javascript_driver = :webkit
-  Capybara.server_boot_timeout = 50
+  # Capybara.server_boot_timeout = 50
   Capybara.server_port = 8082
   Capybara.default_wait_time = 5
 
