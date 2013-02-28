@@ -7,6 +7,13 @@ describe '/v1/cap/:app' do
     @env = 'production'
   end
 
+  it 'should fail withhout access' do
+    login_as_user
+    server.create_recipe(@app, @env, 'content')
+    get '/v1/cap/test/production?task=deploy'
+    last_response.status.should eq 403
+  end
+
   it 'should deal with invalid @app' do
     login_as_admin
     get '/v1/cap/test/production?task=deploy'
@@ -15,7 +22,6 @@ describe '/v1/cap/:app' do
   end
 
   it 'should set default task if not setted' do
-    server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     login_as_admin
 
@@ -29,7 +35,6 @@ describe '/v1/cap/:app' do
   end
 
   it 'should use the given task if present' do
-    server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     login_as_admin
     get "/v1/cap/#{@app}?task=node:restart"
@@ -41,7 +46,6 @@ describe '/v1/cap/:app' do
   end
 
   it 'should fail without env param and more than one env' do
-    server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     server.create_recipe(@app, 'other', 'content')
     login_as_admin
@@ -51,7 +55,6 @@ describe '/v1/cap/:app' do
   end
 
   it 'should fail without env param and app not found' do
-    server = FakeServer.new
     login_as_admin
     get "/v1/cap/#{@app}"
     last_response.should_not be_ok
@@ -59,7 +62,6 @@ describe '/v1/cap/:app' do
   end
 
   it 'should set default env if not setted' do
-    server = FakeServer.new
     server.create_recipe(@app, @env, 'content')
     login_as_admin
     get "/v1/cap/#{@app}"
@@ -71,7 +73,6 @@ describe '/v1/cap/:app' do
   end
 
   it 'should deal with invalid recipe content' do
-    server = FakeServer.new
     server.create_recipe(@app, @env, 'load "invalid"')
     login_as_admin
     get "/v1/cap/#{@app}/#{@env}"

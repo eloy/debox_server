@@ -9,6 +9,7 @@ module DeboxServer
 
         before do
           authenticate!
+          require_auth_for :logs
         end
 
         helpers do
@@ -16,7 +17,7 @@ module DeboxServer
           def get_logs_helper(app, env)
             logs = deployer_logs app, env
             out = logs.map do |l|
-              { status: l[:status], task: l[:task], time: l[:time], error: l[:error] }
+              { status: l[:status], task: l[:task], start_time: l[:start_time], end_time: l[:end_time], error: l[:error] }
             end
             out
           end

@@ -7,7 +7,7 @@ describe 'POST /v1/acl/role/' do
     server.create_recipe('test', 'prod', 'content')
     login_as_user user
     delete "/v1/acl/actions/test", user: user.email, action: 'cap'
-    last_response.status.should eq 401
+    last_response.status.should eq 403
     server.acl_find('test', 'prod', user).should be_nil
   end
 

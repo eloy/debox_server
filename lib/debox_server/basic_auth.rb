@@ -20,8 +20,20 @@ module DeboxServer
       current_user != false
     end
 
+    # Authorization
+    #----------------------------------------------------------------------
+
     def require_admin
-      error!("Access Denied", 401) unless current_user.admin
+      error!("Forbidden", 403) unless current_user.admin
+    end
+
+    def require_auth_for(action, opt = { })
+      app = opt[:app] || current_app
+      env = opt[:env] || current_env
+      user = opt[:user] || current_user
+      unless acl_allow? app, env, user, action
+        error!("Forbidden", 403)
+      end
     end
 
   end

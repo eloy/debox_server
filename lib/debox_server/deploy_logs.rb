@@ -38,7 +38,6 @@ module DeboxServer
     attr_reader :buffer, :time, :result, :success, :error
 
     def initialize
-      @time = DateTime.now
       @buffer = ''
       @listeners = []
     end

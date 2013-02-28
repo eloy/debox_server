@@ -91,11 +91,12 @@ module ThrowEventSource
     body.push "data: job finished\n"
     body.push "event: finish\n"
     body.push "\n"
+    body.succeed
   end
 
   def keep_alive(timeout=5)
     @timer = EM::PeriodicTimer.new(timeout) do
-      body.push ":"
+      body.push ":\n"
     end
   end
 
