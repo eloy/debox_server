@@ -7,7 +7,7 @@ require 'rake'
 RACK_ENV = ENV['RACK_ENV'] || 'development'
 
 def debox
-  @debox_server ||= DeboxServer::Core.new
+  @debox_server ||= DeboxServerCore.new
 end
 
 namespace 'users' do
@@ -95,6 +95,7 @@ end
 namespace :db do
   desc "loads database configuration in for other tasks to run"
   task :load_config do
+    require 'active_record'
     ActiveRecord::Base.configurations = debox.db_conf
     ActiveRecord::Base.establish_connection debox.db_conf[RACK_ENV]
   end
@@ -111,6 +112,15 @@ namespace :db do
       ActiveRecord::Migrator.migrations_paths,
       ENV["VERSION"] ? ENV["VERSION"].to_i : nil
     )
+    Rake::Task["db:schema_dump"].invoke
+  end
+
+  task :schema_dump => :load_config do
+    require 'active_record/schema_dumper'
+    File.open(ENV['SCHEMA'] || "#{DEBOX_ROOT}/db/schema.rb", "w:utf-8") do |file|
+      ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+    end
+    Rake::Task["db:schema_dump"].reenable
   end
 
   desc 'Drops the database'
@@ -124,4 +134,18 @@ namespace :db do
     ActiveRecord::Base.connection.create_database debox.db_conf[RACK_ENV]['database']
   end
 
+  desc 'Rolls the schema back to the previous version (specify steps w/ STEP=n).'
+  task :rollback => :load_config do
+    step = ENV['STEP'] ? ENV['STEP'].to_i : 1
+    ActiveRecord::Migrator.rollback(ActiveRecord::Migrator.migrations_paths, step)
+  end
+
+  namespace :test do
+    desc "Clone current db to test"
+    task :clone do
+      ActiveRecord::Base.establish_connection debox.db_conf['test']
+      schema = ENV['SCHEMA'] || "#{DEBOX_ROOT}/db/schema.rb"
+      load schema
+    end
+  end
 end
