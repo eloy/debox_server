@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     debox_server (0.0.1)
-      activerecord
+      activerecord (>= 3.2.12)
       capistrano
       grape
       json
@@ -16,12 +16,20 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activerecord (1.6.0)
+    activemodel (3.2.12)
+      activesupport (= 3.2.12)
+      builder (~> 3.0.0)
+    activerecord (3.2.12)
+      activemodel (= 3.2.12)
+      activesupport (= 3.2.12)
+      arel (~> 3.0.2)
+      tzinfo (~> 0.3.29)
     activesupport (3.2.12)
       i18n (~> 0.6)
       multi_json (~> 1.0)
+    arel (3.0.2)
     backports (2.6.7)
-    builder (3.2.0)
+    builder (3.0.4)
     capistrano (2.14.2)
       highline
       net-scp (>= 1.0.0)
@@ -106,6 +114,7 @@ GEM
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
+    tzinfo (0.3.35)
     virtus (0.5.4)
       backports (~> 2.6.1)
       descendants_tracker (~> 0.0.1)
