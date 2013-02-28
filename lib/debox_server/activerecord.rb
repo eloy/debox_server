@@ -8,3 +8,8 @@ module DeboxServer
   ActiveRecord::Base.establish_connection Config::db_conf[current_env]
 
 end
+
+# Require models
+Dir[File.join(File.dirname(__FILE__), "model", "*.rb")].each do |file|
+  require file
+end
