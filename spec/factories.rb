@@ -9,4 +9,8 @@ FactoryGirl.define do
     admin true
   end
 
+  factory :app do
+    sequence(:name) {|n| "app[#{n}]"}
+  end
+
 end
