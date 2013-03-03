@@ -14,7 +14,7 @@ FactoryGirl.define do
   end
 
   factory :recipe do
-    sequence(:name) {|n| "app[#{n}]"}
+    sequence(:name) {|n| "recipe[#{n}]"}
     content "#recipe_content"
   end
 

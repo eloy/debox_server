@@ -16,7 +16,8 @@ module DeboxServer
 
           desc "List all the recipes configured for the app"
           get "/:app" do
-            recipes_list(params[:app])
+            app = App.find_by_name! params[:app]
+            app.recipe_names
           end
 
           desc "Show a recipe"
