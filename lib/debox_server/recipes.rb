@@ -5,11 +5,11 @@ module DeboxServer
     RECIPE_TEMPLATE = 'recipe_new.rb.erb'
 
     # Create a new recipe
-    def create_recipe(app, env, content)
+    def create_recipe(app_name, env, content)
       return false if recipe_exists? app, env
-      redis.hsetnx recipe_app_key(app), env, content
+      app = App.find_by_name_or_create(app_name)
+      redis.hsetnx recipe_app_key(app_name), env, content
       # Add app if no present
-      apps_create app
       redis_save
     end
 
