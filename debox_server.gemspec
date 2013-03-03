@@ -27,9 +27,4 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency 'mysql2'
 
-  # Development dependencies
-  gem.add_development_dependency 'rspec'
-  gem.add_development_dependency 'capybara'
-  gem.add_development_dependency 'capybara-webkit'
-  gem.add_development_dependency 'rack-test'
 end
