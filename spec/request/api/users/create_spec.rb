@@ -18,6 +18,6 @@ describe '/v1/users/create' do
     post '/v1/users/create', user: 'new@indeos.es', password: 'secret'
     last_response.status.should eq 201
     last_response.body.should eq 'ok'
-    find_user('new@indeos.es').should_not be_nil
+    User.find_by_email('new@indeos.es').should_not be_nil
   end
 end

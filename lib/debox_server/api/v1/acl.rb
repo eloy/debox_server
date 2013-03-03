@@ -19,7 +19,7 @@ module DeboxServer
             user = current_user
             # Admins can override users
             if params[:user] && current_user.admin
-              user = find_user params[:user]
+              user = User.find_by_email params[:user]
             end
             if acl_allow? current_app, current_env, user, action
               return "YES"
@@ -32,21 +32,21 @@ module DeboxServer
             user = current_user
             # Admins can override users
             if params[:user] && current_user.admin
-              user = find_user params[:user]
+              user = User.find_by_email params[:user]
             end
             acl_find current_app, current_env, user
           end
 
           def add_action(action, user_id)
             require_admin
-            user = find_user user_id
+            user = User.find_by_email user_id
             error!("User not found", 400) unless user
             acl_add current_app, current_env, user, action
           end
 
           def remove_action(action, user_id)
             require_admin
-            user = find_user user_id
+            user = User.find_by_email user_id
             error!("User not found", 400) unless user
             acl_remove current_app, current_env, user, action.to_sym
           end

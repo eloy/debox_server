@@ -1,6 +1,6 @@
 module DeboxServer
   module BasicAuth
-    include DeboxServer::Users
+    # include DeboxServer::Users
 
     def authenticate!
       error!("Access Denied", 401) unless logged_in?

@@ -43,8 +43,9 @@ namespace 'users' do
     STDOUT.puts "Email:  "
     email = STDIN.gets.strip
 
-    dbox = DeboxServer::Core.new
-    dbox.users_make_admin! email
+    user = User.find_by_email email
+    STDOUT.puts "\nUser not found!" and return unless user
+    user.make_admin!
     STDOUT.puts "\nUser #{email} is now an admin"
   end
 
@@ -53,8 +54,9 @@ namespace 'users' do
     STDOUT.puts "Email:  "
     email = STDIN.gets.strip
 
-    dbox = DeboxServer::Core.new
-    dbox.users_remove_admin! email
+    user = User.find_by_email email
+    STDOUT.puts "\nUser not found!" and return unless user
+    user.remove_admin!
     STDOUT.puts "\nUser is not an admin anymore"
   end
 

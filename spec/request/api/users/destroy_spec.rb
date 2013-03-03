@@ -15,6 +15,6 @@ describe '/v1/users/destroy' do
     user = create_user
     delete "/v1/users/destroy", user: user.email
     last_response.should be_ok
-    server.users_list.should eq [admin.email]
+    User.all.should eq [admin]
   end
 end
