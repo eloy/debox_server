@@ -1,14 +1,16 @@
-class App < ActiveRecord::Base
+class Recipe < ActiveRecord::Base
 
   # associations
   #----------------------------------------------------------------------
 
-  has_many :recipes
+  belongs_to :app
 
   # validations
   #----------------------------------------------------------------------
 
-  validates_presence_of :name
+  validates_presence_of :name, :content
   validates_uniqueness_of :name
+
+
 
 end

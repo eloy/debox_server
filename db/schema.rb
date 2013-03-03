@@ -11,7 +11,26 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 201201212257) do
+ActiveRecord::Schema.define(:version => 201303031755) do
+
+  create_table "apps", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "apps", ["name"], :name => "index_apps_on_name"
+
+  create_table "recipes", :force => true do |t|
+    t.integer  "app_id"
+    t.string   "name"
+    t.text     "content"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "recipes", ["app_id"], :name => "index_recipes_on_app_id"
+  add_index "recipes", ["name"], :name => "index_recipes_on_name"
 
   create_table "users", :force => true do |t|
     t.string   "email"
