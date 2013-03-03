@@ -2,7 +2,7 @@ require 'spec_helper'
 
 feature 'live', js: true do
 
-  it 'should stream live log' do
+  xit 'should stream live log' do
     server.create_recipe('test', 'production', 'mock')
     admin = create_admin
     login_as_user! admin
@@ -15,7 +15,7 @@ feature 'live', js: true do
     page.should have_content '5 elefantes'
   end
 
-  it 'should show notice if not running' do
+  xit 'should show notice if not running' do
     admin = create_admin
     login_as_user! admin
     visit "/v1/live/log/job/666"
