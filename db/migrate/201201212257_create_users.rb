@@ -9,9 +9,11 @@ class CreateUsers < ActiveRecord::Migration
       t.datetime :reset_password_token_expires_at, :default => nil
       t.datetime :reset_password_email_sent_at, :default => nil
       t.timestamps
+      t.boolean :admin, default: false
     end
 
     add_index :users, :reset_password_token
+    add_index :users, :email
   end
 
   def self.down
