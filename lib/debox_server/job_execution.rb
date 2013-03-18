@@ -1,3 +1,5 @@
+require "debox_server/output_multiplexer"
+
 module DeboxServer
 
   # Deploy job

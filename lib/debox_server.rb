@@ -3,9 +3,6 @@ require 'fileutils'
 require 'erb'
 
 require 'grape'
-# require 'rack/stream'
-
-
 
 # TODO get root without the ../
 DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
@@ -15,17 +12,14 @@ require "debox_server/logger"
 require "debox_server/config"
 require "debox_server/utils"
 require 'debox_server/redis'
-require "debox_server/job"
 require 'debox_server/activerecord'
 require "debox_server/ssh_keys"
 require "debox_server/apps"
 require "debox_server/users"
 require "debox_server/recipes"
-require "debox_server/deploy_logs"
 
 require "debox_server/job_notifier"
 require "debox_server/jobs_queue"
-require "debox_server/acl"
 
 module DeboxServer
   include DeboxServer::Logger
@@ -36,7 +30,6 @@ module DeboxServer
   include DeboxServer::Apps
   include DeboxServer::Users
   include DeboxServer::Recipes
-  include DeboxServer::ACL
 end
 
 
