@@ -29,9 +29,9 @@ module DeboxServer
 
     def require_auth_for(action, opt = { })
       app = opt[:app] || current_app
-      env = opt[:env] || current_env
+      recipe = opt[:env] || current_env
       user = opt[:user] || current_user
-      unless acl_allow? app, env, user, action
+      unless user.can? action, on: recipe
         error!("Forbidden", 403)
       end
     end

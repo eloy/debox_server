@@ -13,8 +13,8 @@ describe '/v1/acl/:app/:env/allow' do
 
   it 'should return YES if the user is allowed' do
     user = create_user
-    server.create_recipe('test', 'prod', 'content')
-    server.acl_add 'test', 'prod', user, :cap
+    recipe = server.create_recipe('test', 'prod', 'content')
+    create :permission, user: user, recipe: recipe, action: 'cap'
     login_as_user user
     get "/v1/acl/allowed/test/prod", action: 'cap'
     last_response.should be_ok
@@ -23,8 +23,8 @@ describe '/v1/acl/:app/:env/allow' do
 
   it 'should use the right env' do
     user = create_user
-    server.create_recipe('test', 'prod', 'content')
-    server.acl_add 'test', 'prod', user, :cap
+    recipe = server.create_recipe('test', 'prod', 'content')
+    create :permission, user: user, recipe: recipe, action: 'cap'
     login_as_user user
     get "/v1/acl/allowed/test", action: 'cap'
     last_response.should be_ok
@@ -34,8 +34,8 @@ describe '/v1/acl/:app/:env/allow' do
   it "user can't override user param" do
     user = create_user
     other_user = create_user email: 'other@indeos.es'
-    server.create_recipe('test', 'prod', 'content')
-    server.acl_add 'test', 'prod', other_user, :cap
+    recipe = server.create_recipe('test', 'prod', 'content')
+    create :permission, user: other_user, recipe: recipe, action: 'cap'
     login_as_user user
     get "/v1/acl/allowed/test", action: 'cap', user: other_user.email
     last_response.status.should eq 403
@@ -44,8 +44,8 @@ describe '/v1/acl/:app/:env/allow' do
   it "admins can override user param" do
     admin = create_admin
     other_user = create_user email: 'other@indeos.es'
-    server.create_recipe('test', 'prod', 'content')
-    server.acl_add 'test', 'prod', other_user, :cap
+    recipe = server.create_recipe('test', 'prod', 'content')
+    create :permission, user: other_user, recipe: recipe, action: 'cap'
     login_as_admin admin
     get "/v1/acl/allowed/test", action: 'cap', user: other_user.email
     last_response.should be_ok
