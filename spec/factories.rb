@@ -18,4 +18,10 @@ FactoryGirl.define do
     content "#recipe_content"
   end
 
+  factory :permission do
+    user { build_stubbed :user }
+    recipe { build_stubbed :recipe }
+    action 'cap'
+  end
+
 end

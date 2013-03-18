@@ -5,6 +5,7 @@ class Recipe < ActiveRecord::Base
 
   belongs_to :app
   has_many :jobs
+  has_many :permissions
 
   # validations
   #----------------------------------------------------------------------

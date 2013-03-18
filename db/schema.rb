@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 201303031950) do
+ActiveRecord::Schema.define(:version => 201304181910) do
 
   create_table "apps", :force => true do |t|
     t.string   "name"
@@ -35,6 +35,17 @@ ActiveRecord::Schema.define(:version => 201303031950) do
   end
 
   add_index "jobs", ["recipe_id"], :name => "index_jobs_on_recipe_id"
+
+  create_table "permissions", :force => true do |t|
+    t.integer  "recipe_id"
+    t.integer  "user_id"
+    t.string   "action"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "permissions", ["recipe_id"], :name => "index_permissions_on_recipe_id"
+  add_index "permissions", ["user_id"], :name => "index_permissions_on_user_id"
 
   create_table "recipes", :force => true do |t|
     t.integer  "app_id"
