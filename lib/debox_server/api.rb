@@ -14,6 +14,17 @@ module DeboxServer
     helpers DeboxServer::BasicAuth
     helpers DeboxServer::ViewHelpers
 
+    # Exceptions management
+    #----------------------------------------------------------------------
+
+    rescue_from ActiveRecord::RecordNotFound do |e|
+      Rack::Response.new e.message, 400
+    end
+
+    rescue_from ActiveRecord::RecordInvalid do |e|
+      Rack::Response.new e.message, 400
+    end
+
     # V1
     #----------------------------------------------------------------------
 
