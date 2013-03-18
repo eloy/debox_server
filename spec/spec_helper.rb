@@ -34,10 +34,6 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
 
-  config.after(:each) do
-    DeboxServer::RedisDB.flush_test_db
-  end
-
   config.include Rack::Test::Methods
 
   # Setup capybara

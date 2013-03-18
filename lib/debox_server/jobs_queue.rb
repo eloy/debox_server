@@ -14,7 +14,6 @@ module DeboxServer
   class JobsQueue
 
     include DeboxServer::Recipes
-    include DeboxServer::RedisDB
     include DeboxServer::Logger
 
 

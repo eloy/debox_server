@@ -11,7 +11,6 @@ require "debox_server/version"
 require "debox_server/logger"
 require "debox_server/config"
 require "debox_server/utils"
-require 'debox_server/redis'
 require 'debox_server/activerecord'
 require "debox_server/ssh_keys"
 require "debox_server/apps"
@@ -23,7 +22,6 @@ require "debox_server/jobs_queue"
 
 module DeboxServer
   include DeboxServer::Logger
-  include DeboxServer::RedisDB
   include DeboxServer::Utils
   include DeboxServer::Config
   include DeboxServer::SshKeys
