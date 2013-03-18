@@ -45,10 +45,13 @@ end
 
 
 # Build a job with stdout and capistrano methos stubbed
-def stubbed_job(app, env, task='deploy', out=nil)
+def stubbed_job(app_name, env_name, task='deploy', out=nil)
+  app = App.find_by_name_or_create app_name
+  recipe = app.recipes.find_by_name(env_name) || create(:recipe, app: app)
   out = OpenStruct.new time: DateTime.now, success: true unless out
-  job = DeboxServer::Job.new(app, env, task)
+  job = Job.new(recipe: recipe, task: task)
   job.stub(:stdout) { out }
   job.stub(:capistrano) { { } }
+  job.send(:update_job_status)
   return job
 end

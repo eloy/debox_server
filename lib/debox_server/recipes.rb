@@ -7,7 +7,9 @@ module DeboxServer
     # Create a new recipe
     def create_recipe(app_name, name, content)
       app = App.find_by_name_or_create(app_name)
-      Recipe.create app: app, name: name, content: content
+      recipe = Recipe.create app: app, name: name, content: content
+      return false unless recipe.valid?
+      return recipe
     end
 
     # Update recipe if present

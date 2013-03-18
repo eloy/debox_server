@@ -13,8 +13,6 @@ describe '/v1/logs/:app/:env' do
     out = OpenStruct.new success: true, buffer: 'Some log content', error: 'Log result'
     server.create_recipe('test', 'production', 'content')
     job = stubbed_job 'test', 'production', 'deploy', out
-    job.save_log
-
     login_as_admin
     get '/v1/logs/test/production'
 
@@ -22,14 +20,13 @@ describe '/v1/logs/:app/:env' do
     data = JSON.parse last_response.body, symbolize_names: true
     saved = data.first
     saved[:error].should eq 'Log result'
-    saved[:status].should eq 'success'
+    saved[:success].should eq true
   end
 
   it 'should set default env if not set and only one available' do
     out = OpenStruct.new success: true, buffer: 'Some log content', error: 'Log result'
     server.create_recipe('test', 'production', 'content')
     job = stubbed_job 'test', 'production', 'deploy', out
-    job.save_log
 
     login_as_admin
     get '/v1/logs/test'
@@ -37,7 +34,7 @@ describe '/v1/logs/:app/:env' do
     data = JSON.parse last_response.body, symbolize_names: true
     saved = data.first
     saved[:error].should eq 'Log result'
-    saved[:status].should eq 'success'
+    saved[:success].should eq true
   end
 
 end

@@ -14,7 +14,7 @@ module DeboxServer
     end
 
     def send_notification(notification, job, opt={ })
-      msg = {notification: notification, job: job.info}
+      msg = {notification: notification, job: job}
       msg.merge! opt
       channel.push msg.to_json
     end

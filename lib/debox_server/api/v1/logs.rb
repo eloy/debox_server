@@ -14,18 +14,20 @@ module DeboxServer
 
         helpers do
 
-          def get_logs_helper(app, env)
-            logs = deployer_logs app, env
-            out = logs.map do |l|
-              { status: l[:status], task: l[:task], start_time: l[:start_time], end_time: l[:end_time], error: l[:error] }
+          def get_logs_helper(recipe)
+            recipe.jobs.map do |job|
+              { success: job.success, task: job.task, start_time: job.start_time, end_time: job.end_time, error: job.error }
             end
-            out
           end
 
-          def show_log(app, env, index=0)
-            log = deployer_logs_at current_app, current_env, index
-            error!("Log not found", 400) unless log
-            log[:log]
+          def show_log(recipe, job_id = false)
+            if job_id
+              job = recipe.jobs.find job_id
+            else
+              job = recipe.jobs.last
+            end
+            error!("job not found", 400) unless job
+            job.log
           end
 
         end
@@ -33,22 +35,22 @@ module DeboxServer
         resource :logs do
 
           get "/:app" do
-            get_logs_helper current_app, current_env
+            get_logs_helper current_env
           end
 
           get "/:app/:env" do
-            get_logs_helper current_app, current_env
+            get_logs_helper current_env
           end
         end
 
 
         resource :log do
           get "/:app/:env" do
-            show_log current_app, current_env, params[:index]
+            show_log current_env, params[:job_id]
           end
 
           get "/:app" do
-            show_log current_app, current_env, params[:index]
+            show_log current_env, params[:job_id]
           end
         end
 

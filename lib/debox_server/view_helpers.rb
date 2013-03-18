@@ -17,7 +17,7 @@ module DeboxServer
         if app.recipes.count == 0
           error!("#{current_app} hasn't configured enviments", 400)
         elsif app.recipes.count > 1
-          availables = recipes.map(&:name).join(', ')
+          availables = app.recipes.map(&:name).join(', ')
           error!("Enviromnment must be set. Availables: #{availables}.\n", 400)
         else
           @request_env = app.recipes.first

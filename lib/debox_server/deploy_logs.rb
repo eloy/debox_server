@@ -1,36 +1,36 @@
 module DeboxServer
-  module DeployLogs
+  # module DeployLogs
 
-    MAX_LOGS_COUNT = 15
+  #   MAX_LOGS_COUNT = 15
 
-    def deployer_logs(app, env)
-      range = redis.lrange log_key_name(app, env), 0, MAX_LOGS_COUNT
-      range.map do |log|
-        JSON.parse log, symbolize_names: true
-      end
-    end
+  #   def deployer_logs(app, env)
+  #     range = redis.lrange log_key_name(app, env), 0, MAX_LOGS_COUNT
+  #     range.map do |log|
+  #       JSON.parse log, symbolize_names: true
+  #     end
+  #   end
 
-    def deployer_logs_last(app, env)
-      deployer_logs_at app, env, 0
-    end
+  #   def deployer_logs_last(app, env)
+  #     deployer_logs_at app, env, 0
+  #   end
 
-    def deployer_logs_at(app, env, index)
-      log = redis.lindex(log_key_name(app, env), index)
-      JSON.parse log, symbolize_names: true if log
-    end
+  #   def deployer_logs_at(app, env, index)
+  #     log = redis.lindex(log_key_name(app, env), index)
+  #     JSON.parse log, symbolize_names: true if log
+  #   end
 
-    def deployer_logs_count(app, env)
-      redis.llen log_key_name(app, env)
-    end
+  #   def deployer_logs_count(app, env)
+  #     redis.llen log_key_name(app, env)
+  #   end
 
-    def deployer_logs_destroy(app, env)
-      redis.del log_key_name(app, env)
-    end
+  #   def deployer_logs_destroy(app, env)
+  #     redis.del log_key_name(app, env)
+  #   end
 
-    def log_key_name(app, env)
-      "logger_#{app}_#{env}"
-    end
-  end
+  #   def log_key_name(app, env)
+  #     "logger_#{app}_#{env}"
+  #   end
+  # end
 
 
   # Output multiplexer

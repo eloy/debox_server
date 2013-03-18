@@ -3,40 +3,55 @@ module DeboxServer
   # Deploy job
   #----------------------------------------------------------------------
 
-  class Job
-    include DeboxServer::RedisDB
-    include DeboxServer::Recipes
-    include DeboxServer::DeployLogs
-
-    attr_reader :id, :app, :env, :task
-
-    def initialize(app, env, task)
-      @id = DeboxServer::jobs_queue.next_job_id
-      @app = app
-      @env = env
-      @task = task
-      @recipe = recipe_content app, env
-      @running = false
-      @finished = false
-      @subscribed_ids = []
-    end
+  module JobExecution
 
     def start
       execute_task
-      save_log
+      update_job_status
       unsubscribe_all
       trigger_on_finish
       return self
     end
 
+    # Current job output
+    def buffer
+      stdout.buffer
+    end
+
+    def running?
+      @running ||= false
+    end
+
+    def finished?
+      @finished ||= false
+    end
+
+    # callbacks
+    #----------------------------------------------------------------------
+
+    def subscribed_ids
+      @subscribed_ids ||= []
+    end
+
+    def subscribe(&block)
+      sid = stdout.channel.subscribe block
+      subscribed_ids << sid
+    end
+
+    def unsubscribe(sid)
+      stdout.channel.unsubscribe sid
+    end
+
+    private
+
     # Load the recipe and execute the task
     def execute_task
       @running = true
-      @start_time = DateTime.now
+      self.start_time = DateTime.now
       begin
 
         # Load the recipe content
-        capistrano.load string: @recipe
+        capistrano.load string: self.recipe.content
 
         DeboxServer.log.info "Deploying from git: #{capistrano[:repository]} #{capistrano[:branch]}, #{capistrano[:real_revision]}"
         result = capistrano.find_and_execute_task(task, before: :start, after: :finish)
@@ -49,76 +64,20 @@ module DeboxServer
       ensure
         @running = false
         @finished = true
-        @end_time = DateTime.now
       end
     end
 
-    # Save capistrano logs in redis
-    def save_log
-      begin
-        job_log = info
-        job_log[:log] = stdout.buffer || "** EMPTY BUFFER **"
-        redis.lpush log_key_name(app, env), job_log.to_json
-
-        # Remove last logs
-        if deployer_logs_count(app, env) > MAX_LOGS_COUNT
-          redis.ltrim log_key_name(app, env), 0, MAX_LOGS_COUNT - 1
-        end
-        redis_save
-      rescue Exception => error
-        DeboxServer::log.error "Error saving logs from #{self.id}: #{error}"
-      end
-    end
-
-    # Return info about the job
-    # Used for generate the log
-    def info
-      { job_id: self.id,
-        app: app,
-        env: env,
-        task: task,
-        start_time: @start_time,
-        end_time: @end_time,
-        running: @running,
-        success: stdout.success || false,
-        status: stdout.success ? "success" : "error",
-        error: stdout.error || '',
-        config: {
-          revision: capistrano[:real_revision],
-          repository: capistrano[:repository],
-          branch: capistrano[:branch],
-        }
-      }
-    end
-
-    # Current job output
-    def buffer
-      stdout.buffer
-    end
-
-    def running?
-      @running
-    end
-
-    def finished?
-      @finished
-    end
-
-    # callbacks
-    #----------------------------------------------------------------------
-
-
-    def subscribe(&block)
-      sid = stdout.channel.subscribe block
-      @subscribed_ids << sid
-    end
-
-    def unsubscribe(sid)
-      stdout.channel.unsubscribe sid
+    def update_job_status
+      self.end_time = DateTime.now
+      self.log = stdout.buffer || "** EMPTY BUFFER **"
+      self.success = stdout.success || false
+      self.error = stdout.error
+      self.config = capistrano.to_json
+      self.save
     end
 
     def unsubscribe_all
-      @subscribed_ids.each do |sid|
+      subscribed_ids.each do |sid|
         stdout.channel.unsubscribe sid
       end
     end
