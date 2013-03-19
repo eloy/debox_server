@@ -16,7 +16,7 @@ module DeboxServer
 
           def get_logs_helper(recipe)
             recipe.jobs.map do |job|
-              { success: job.success, task: job.task, start_time: job.start_time, end_time: job.end_time, error: job.error }
+              { id: job.id, success: job.success, task: job.task, start_time: job.start_time, end_time: job.end_time, error: job.error }
             end
           end
 
