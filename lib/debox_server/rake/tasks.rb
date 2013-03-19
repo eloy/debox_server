@@ -163,9 +163,10 @@ namespace :import do
     # Import users
     redis['users'].each do |email, user_data_raw|
       data = JSON.parse user_data_raw, symbolize_names: true
-      user = User.create email: data[:email], api_key: data[:api_key], admin: data[:admin], password: '1234', password_confirmation: '1234'
+      user = User.new email: data[:email], api_key: data[:api_key], admin: data[:admin]
       # Write real password without re crypt again
       user.send :write_attribute, :password, data[:password]
+      user.save
       puts "Import user #{user.email} [#{user.id}]"
     end
 
@@ -180,7 +181,9 @@ namespace :import do
         # And import logs
         redis["logger_#{app_name}_#{env}"].each do |log_raw|
           log = JSON.parse log_raw, symbolize_names: true
-          job = recipe.jobs.create task: log[:task], start_time: log[:start_time], end_time: log[:end_time], success: log[:success], log: log[:log], error: log[:error], config: log[:config].to_json
+          start_time = log[:start_time] ? DateTime.parse(log[:start_time]) : DateTime.new
+          end_time = log[:end_time] ? DateTime.parse(log[:end_time]) : DateTime.new
+          job = recipe.jobs.create task: log[:task], start_time: start_time, end_time: end_time, success: log[:success], log: log[:log], error: log[:error], config: log[:config].to_json
           puts "Import job #{job.start_time} [#{job.id}]"
         end
       end
