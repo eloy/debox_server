@@ -31,7 +31,7 @@ module DeboxServer
       jobs.push job
       notifier.added job
       EM::next_tick do
-        queue(job.app, job.env).push job
+        queue(job.recipe).push job
       end
     end
 
@@ -50,12 +50,12 @@ module DeboxServer
 
     private
 
-    def queue(app, env)
-      queues[queue_name(app, env)] ||= new_queue
+    def queue(recipe)
+      queues[queue_name(recipe)] ||= new_queue
     end
 
-    def queue_name(app, env)
-      "#{app}_#{env}".to_sym
+    def queue_name(recipe)
+      "#{recipe.app.name}_#{recipe.name}".to_sym
     end
 
     def queues
@@ -67,7 +67,6 @@ module DeboxServer
     def new_queue
       queue = EM::Queue.new
       processor = proc { |job|
-        name = queue_name job.app, job.env
         log.debug "Starting job #{job.id}"
 
         callback = proc do |job|
