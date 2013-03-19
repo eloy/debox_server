@@ -14,9 +14,9 @@ module DeboxServer
 
         helpers do
           def run_cap_task(app, recipe, task='deploy')
-            job = Job.new recipe: recipe, task: task
+            job = Job.create recipe: recipe, task: task
             jobs_queue.add(job)
-            { job_id:  666, app: app.name, env: recipe.name, task: task }
+            { job_id: job.id, app: app.name, env: recipe.name, task: task }
           end
         end
 
