@@ -44,6 +44,11 @@ module DeboxServer
       stdout.channel.unsubscribe sid
     end
 
+    # Define callback to be called when the job ends
+    def on_finish(&block)
+      on_finish_callbacks << block
+    end
+
     private
 
     # Load the recipe and execute the task
@@ -83,12 +88,6 @@ module DeboxServer
         stdout.channel.unsubscribe sid
       end
     end
-
-    def on_finish(&block)
-      on_finish_callbacks << block
-    end
-
-    private
 
     def trigger_on_finish
       on_finish_callbacks.each do |callback|
