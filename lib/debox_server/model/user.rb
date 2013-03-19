@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-
+  include DeboxServer::Utils
   # validations
   #----------------------------------------------------------------------
 
