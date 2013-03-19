@@ -151,3 +151,39 @@ namespace :db do
     end
   end
 end
+
+
+# Task for import redis db
+namespace :import do
+  task :redis do
+    file = File.join DEBOX_ROOT, 'db', 'redis_dump.json'
+    file_content = File.open(file).read
+    redis = JSON.parse file_content
+
+    # Import users
+    redis['users'].each do |email, user_data_raw|
+      data = JSON.parse user_data_raw, symbolize_names: true
+      user = User.create email: data[:email], api_key: data[:api_key], admin: data[:admin], password: '1234', password_confirmation: '1234'
+      # Write real password without re crypt again
+      user.send :write_attribute, :password, data[:password]
+      puts "Import user #{user.email} [#{user.id}]"
+    end
+
+    # Import apps
+    redis['apps'].each do |app_name|
+      app = App.create name: app_name
+      puts "Import app #{app.name} [#{app.id}]"
+      # import recipes
+      redis["#{app_name}_recipes"].each do |env, content|
+        recipe = app.recipes.create name: env, content: content
+        puts "Import recipe #{recipe.name} [#{recipe.id}]"
+        # And import logs
+        redis["logger_#{app_name}_#{env}"].each do |log_raw|
+          log = JSON.parse log_raw, symbolize_names: true
+          job = recipe.jobs.create task: log[:task], start_time: log[:start_time], end_time: log[:end_time], success: log[:success], log: log[:log], error: log[:error], config: log[:config].to_json
+          puts "Import job #{job.start_time} [#{job.id}]"
+        end
+      end
+    end
+  end
+end
