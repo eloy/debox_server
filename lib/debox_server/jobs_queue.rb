@@ -48,6 +48,10 @@ module DeboxServer
       @notifier ||= JobNotifier.new
     end
 
+    def status
+      { queued_jobs: jobs, queues: queues }
+    end
+
     private
 
     def queue(recipe)

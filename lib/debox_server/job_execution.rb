@@ -64,13 +64,11 @@ module DeboxServer
         result = capistrano.find_and_execute_task(task, before: :start, after: :finish)
         stdout.result = result
 
-      rescue Exception => error
+      rescue Capistrano::CommandError => error
         DeboxServer::log.warn "Task #{self.id} finished with error #{error}"
         stdout.error = error
         return false
       ensure
-        @running = false
-        @finished = true
       end
     end
 
@@ -79,7 +77,7 @@ module DeboxServer
       self.log = stdout.buffer || "** EMPTY BUFFER **"
       self.success = stdout.success || false
       self.error = stdout.error
-      self.config = capistrano.to_json
+      self.config = { } #capistrano.to_json
       self.save
     end
 

@@ -25,7 +25,7 @@ module DeboxServer
       end
     end
 
-    notifications :started, :stdout, :added
+    notifications :started, :stdout, :added, :finished
 
   end
 end
