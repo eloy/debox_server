@@ -4,9 +4,6 @@ require 'erb'
 
 require 'grape'
 
-# TODO get root without the ../
-DEBOX_ROOT = File.join(File.dirname(__FILE__), '../')
-
 require "debox_server/version"
 require "debox_server/logger"
 require "debox_server/config"

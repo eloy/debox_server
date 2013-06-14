@@ -47,7 +47,7 @@ module DeboxServer
     end
 
     def recipe_template_content
-      name = File.join DEBOX_ROOT, 'assets', RECIPE_TEMPLATE
+      name = File.join Config.debox_root, 'assets', RECIPE_TEMPLATE
       File.open(name).read
     end
 

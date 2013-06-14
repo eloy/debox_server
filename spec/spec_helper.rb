@@ -1,5 +1,6 @@
 # TODO: better way for deal with envs
 ENV['RACK_ENV'] = 'test'
+ENV['DEBOX_ROOT'] = File.join(File.dirname(__FILE__), '../')
 
 require 'rubygems'
 require 'bundler'

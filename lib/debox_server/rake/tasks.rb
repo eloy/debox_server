@@ -5,6 +5,7 @@ require 'rake'
 
 
 RACK_ENV = ENV['RACK_ENV'] || 'development'
+DEBOX_ROOT = File.join(File.dirname(__FILE__), '../../../')
 
 def debox
   @debox_server ||= DeboxServerCore.new
