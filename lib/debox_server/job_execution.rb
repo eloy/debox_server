@@ -57,6 +57,8 @@ module DeboxServer
       self.start_time = DateTime.now
       begin
 
+        capistrano.load_paths << File.join(Config.debox_root, 'capistrano')
+
         # Load the recipe content
         capistrano.load string: self.recipe.content
 
@@ -64,7 +66,7 @@ module DeboxServer
         result = capistrano.find_and_execute_task(task, before: :start, after: :finish)
         stdout.result = result
 
-      rescue Capistrano::CommandError => error
+      rescue Exception => error
         DeboxServer::log.warn "Task #{self.id} finished with error #{error}"
         stdout.error = error
         return false
