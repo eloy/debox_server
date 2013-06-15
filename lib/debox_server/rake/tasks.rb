@@ -20,8 +20,9 @@ namespace 'users' do
 
     STDOUT.puts "\nAdmin password:"
     password = STDIN.gets.strip
-    dbox = DeboxServer::Core.new
-    if dbox.add_user email, password
+    user = User.new email: email, password: password
+    user.admin = true
+    if user.save
       STDOUT.puts "\nUser created"
     else
       STDOUT.puts "\nCan't create user."
@@ -30,12 +31,11 @@ namespace 'users' do
 
   desc 'list users'
   task :list  do
-    dbox = DeboxServer::Core.new
+
     STDOUT.puts "email\t\t\t\tapi_key\t\t\t\t\tAdmin"
-    dbox.users_config.values.each do |user_data|
-      user = JSON.parse user_data, symbolize_names: true
-      isAdmin = "YES" if user[:admin]
-      STDOUT.puts "#{user[:email]}\t\t\t#{user[:api_key]}\t#{isAdmin}"
+    User.all.each do |user|
+      isAdmin = "YES" if user.admin?
+      STDOUT.puts "#{user.email}\t\t\t#{user.api_key}\t#{isAdmin}"
     end
   end
 
@@ -111,8 +111,9 @@ namespace :db do
 
   desc "migrate your database"
   task :migrate => :load_config do
+    migrations_path = File.join DEBOX_ROOT, 'db', 'migrate'
     ActiveRecord::Migrator.migrate(
-      ActiveRecord::Migrator.migrations_paths,
+      migrations_path,
       ENV["VERSION"] ? ENV["VERSION"].to_i : nil
     )
     Rake::Task["db:schema_dump"].invoke
