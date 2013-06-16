@@ -10,47 +10,61 @@ module DeboxServer
 
         before do
           authenticate!
-          require_auth_for :logs
         end
 
         helpers do
           include ThrowEventSource
 
-          def live_log(app, env)
+          def job_live_log(id)
             async do
-              DeboxServer.log.info "New live connection to #{app} #{env}"
-              @job = DeboxServer::Deployer::running_job app, env
-              if @job && (params[:job_id].nil? || params[:job_id] == @job.id)
-                keep_alive # Keep alive the connection sending empty packages
-                chunk @job.buffer unless @job.buffer.empty? # Show current buffer
-                @sid = @job.subscribe{ |l| chunk l }
-                @job.on_finish do
-                  @job.unsubscribe @sid
+              log.info "Live connection to job ##{id}"
+              job = jobs_queue.find id.to_i
+              if job
+                chunk job.buffer unless job.buffer.empty? # Show current buffer
+
+                unless job.finished?
+                  keep_alive # Keep alive the connection sending empty packages
+                  sid = job.subscribe{ |l| chunk l }
+                  job.on_finish do
+                    close
+                  end
+                else
                   close
                 end
+
               else
                 chunk "Job not running."
                 close
               end
 
               before_close do
-                DeboxServer.log.debug "Closed connection to #{app} #{env}"
-                @job.unsubscribe @sid if @job
+                log.debug "Live connection to job ##{id} clossed"
+                job.unsubscribe sid if job
               end
 
+            end
+          end
+
+          def live_notifications
+            async do
+              keep_alive
+              sid = jobs_queue.channel.subscribe { |l| chunk l }
+
+              before_close do
+                jobs_queue.channel.unsubscribe sid
+              end
             end
           end
         end
 
         resource :live do
-          get '/log/:app/:env' do
-            live_log current_app, current_env
+          get '/log/job/:id' do
+            job_live_log params[:id]
           end
 
-          get '/log/:app' do
-            live_log current_app, current_env
+          get 'notifications' do
+            live_notifications
           end
-
         end
       end
     end

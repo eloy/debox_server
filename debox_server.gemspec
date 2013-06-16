@@ -22,11 +22,9 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'json'
   gem.add_runtime_dependency 'capistrano'
   gem.add_runtime_dependency 'redis'
+  gem.add_runtime_dependency 'activerecord', '>= 3.2.12'
   gem.add_runtime_dependency 'log4r'
 
-  # Development dependencies
-  gem.add_development_dependency 'rspec'
-  gem.add_development_dependency 'capybara'
-  gem.add_development_dependency 'capybara-webkit'
-  gem.add_development_dependency 'rack-test'
+  gem.add_runtime_dependency 'mysql2'
+
 end

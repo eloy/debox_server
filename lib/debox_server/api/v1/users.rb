@@ -14,7 +14,7 @@ module DeboxServer
 
         resource :users do
           get do
-            users_config.keys
+            User.all.map(&:email)
           end
 
           post '/create' do
@@ -26,7 +26,9 @@ module DeboxServer
           # TODO validate params
           delete '/destroy' do
             error!("Invalid param", 400) unless params[:user]
-            users_destroy params[:user]
+            user = User.find_by_email params[:user]
+            error!("Invalid user", 400) unless user
+            user.destroy
             "ok"
           end
 

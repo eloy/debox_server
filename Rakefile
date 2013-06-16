@@ -1,4 +1,11 @@
 #!/usr/bin/env rake
+require 'rubygems'
+require 'bundler'
+
+ENV['DEBOX_ROOT'] ||= File.dirname __FILE__
+
+Bundler.require
+
 require "bundler/gem_tasks"
 
 

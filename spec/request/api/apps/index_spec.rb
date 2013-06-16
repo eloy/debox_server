@@ -13,8 +13,8 @@ describe '/v1/apps' do
     login_as_admin
     server = FakeServer.new
 
-    server.apps_create 'test'
-    server.apps_create 'test2'
+    create :app, name: 'test'
+    create :app, name: 'test2'
     server.create_recipe('test', :production, 'content')
     server.create_recipe('test2', :dev, 'content')
 

@@ -14,11 +14,11 @@ describe '/v1/cap/:app' do
     last_response.status.should eq 403
   end
 
-  it 'should deal with invalid @app' do
+  it 'should deal with invalid @app -e pollo' do
     login_as_admin
     get '/v1/cap/test/production?task=deploy'
     last_response.should_not be_ok
-    last_response.body.should match 'App not found'
+    last_response.body.should match "Couldn't find App with name = test"
   end
 
   it 'should set default task if not setted' do
@@ -54,11 +54,11 @@ describe '/v1/cap/:app' do
     last_response.body.should match 'Enviromnment must be set'
   end
 
-  it 'should fail without env param and app not found' do
+  it 'should fail without env param and invalid app' do
     login_as_admin
     get "/v1/cap/#{@app}"
     last_response.should_not be_ok
-    last_response.body.should match 'App not found'
+    last_response.body.should match "Couldn't find App with name = test"
   end
 
   it 'should set default env if not setted' do

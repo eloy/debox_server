@@ -7,41 +7,23 @@ describe DeboxServer::Recipes do
 
   describe 'DeboxServer::Recipes#recipe_content' do
     it 'should return a new recipe with defaults vaules' do
-      server = FakeServer.new
       server.create_recipe(app, :production, content)
       server.recipe_content(app, :production).should eq content
     end
 
     it 'should create an app if not present' do
-      server = FakeServer.new
       server.create_recipe(app, :production, content)
       server.app_exists?(app).should be_true
     end
   end
 
-  describe 'DeboxServer::Recipes#recipe_exists?' do
-    it 'should return false if recipe does not exists' do
-      server = FakeServer.new
-      server.recipe_exists?(app, :production).should be_false
-    end
-
-    it 'should return true if recipe exists' do
-      server = FakeServer.new
-      server.create_recipe(app, :production, content)
-      server.recipe_exists?(app, :production).should be_true
-    end
-  end
-
   describe 'DeboxServer::Recipes#create_recipe' do
     it 'should create the recipe if not exist' do
-      server = FakeServer.new
       server.create_recipe(app, :production, content).should be_true
-      server.recipe_exists?(app, :production).should be_true
       server.recipe_content(app, :production).should eq content
     end
 
     it 'should fail if already exists' do
-      server = FakeServer.new
       server.create_recipe(app, :production, content)
       server.create_recipe(app, :production, 'try to overwrite').should be_false
       server.recipe_content(app, :production).should eq content
@@ -50,7 +32,6 @@ describe DeboxServer::Recipes do
 
   describe 'DeboxServer::Recipes#update_recipe' do
     it 'should update the recipe if exist' do
-      server = FakeServer.new
       server.create_recipe(app, :production, 'this is the first content')
       server.update_recipe(app, :production, content)
       server.recipe_content(app, :production).should eq content
@@ -58,7 +39,6 @@ describe DeboxServer::Recipes do
     end
 
     it 'should fail if already exists' do
-      server = FakeServer.new
       server.create_recipe(app, :production, content)
       server.create_recipe(app, :production, 'try to overwrite').should be_false
       server.recipe_content(app, :production).should eq content
@@ -68,7 +48,6 @@ describe DeboxServer::Recipes do
 
   describe 'DeboxServer::Recipes#new_recipe' do
     it 'should return a new recipe with defaults vaules' do
-      server = FakeServer.new
       content = server.new_recipe app, :production
       content.should match app
       content.should match 'PRODUCTION'
@@ -77,11 +56,11 @@ describe DeboxServer::Recipes do
 
   describe 'DeboxServer::Recipes#recipes_destroy' do
     it 'should destroy the recipe if exists' do
-      server = FakeServer.new
-      server.create_recipe('test', :staging, 'sample content')
-      server.create_recipe('test', :production, 'sample content')
+      staging = server.create_recipe('test', :staging, 'sample content')
+      production = server.create_recipe('test', :production, 'sample content')
       server.recipes_destroy('test', 'staging')
-      server.recipes_list('test').should eq ['production']
+      app = App.find_by_name 'test'
+      app.recipes.should eq [production]
     end
   end
 end

@@ -1,3 +1,6 @@
+require "debox_server/basic_auth"
+require "debox_server/view_helpers"
+
 # Require controllers
 Dir[File.join(File.dirname(__FILE__), "api/v1/", "*.rb")].each do |file|
   require file
@@ -7,9 +10,22 @@ module DeboxServer
 
   class DeboxAPI < Grape::API
 
-    helpers DeboxServer::App
+    helpers DeboxServer
     helpers DeboxServer::BasicAuth
     helpers DeboxServer::ViewHelpers
+
+    # Exceptions management
+    #----------------------------------------------------------------------
+
+    rescue_from ActiveRecord::RecordNotFound do |e|
+      Rack::Response.new e.message, 400
+    end
+
+    rescue_from ActiveRecord::RecordInvalid do |e|
+      Rack::Response.new e.message, 400
+    end
+
+    rescue_from :all
 
     # V1
     #----------------------------------------------------------------------
