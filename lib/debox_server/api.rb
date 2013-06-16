@@ -25,6 +25,8 @@ module DeboxServer
       Rack::Response.new e.message, 400
     end
 
+    rescue_from :all
+
     # V1
     #----------------------------------------------------------------------
 
