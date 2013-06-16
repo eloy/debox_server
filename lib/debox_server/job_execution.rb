@@ -56,7 +56,6 @@ module DeboxServer
       @running = true
       self.start_time = DateTime.now
       begin
-
         capistrano.load_paths << File.join(Config.debox_root, 'capistrano')
 
         # Load the recipe content
@@ -68,6 +67,7 @@ module DeboxServer
 
       rescue Exception => error
         DeboxServer::log.warn "Task #{self.id} finished with error #{error}"
+        stdout.puts "Task finished with error: #{error}"
         stdout.error = error
         return false
       ensure
@@ -80,7 +80,8 @@ module DeboxServer
       self.success = stdout.success || false
       self.error = stdout.error
       self.config = { } #capistrano.to_json
-      self.save
+      # Save and quickly return the connection to the pool
+      ActiveRecord::Base.connection_pool.with_connection { self.save }
     end
 
     def unsubscribe_all
