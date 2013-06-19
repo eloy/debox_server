@@ -5,7 +5,7 @@ module DeboxServer
       class ApiKeys < Grape::API
 
         version 'v1'
-        format :json
+        format :txt
 
         desc "Login and return the api_key for the user"
         get "/api_key" do

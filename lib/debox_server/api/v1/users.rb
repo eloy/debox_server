@@ -5,7 +5,6 @@ module DeboxServer
       class Users < Grape::API
 
         version 'v1'
-        format :json
 
         before do
           authenticate!
@@ -14,7 +13,7 @@ module DeboxServer
 
         resource :users do
           get do
-            User.all.map(&:email)
+            User.all.map(&:email).to_json
           end
 
           post '/create' do

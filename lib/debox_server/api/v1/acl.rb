@@ -5,7 +5,6 @@ module DeboxServer
       class ACL < Grape::API
 
         version 'v1'
-        format :json
 
         before do
           authenticate!
@@ -86,7 +85,7 @@ module DeboxServer
             optional :user, type: String, desc: "optional user. Require admin access."
           end
           get '/actions/:app/:env' do
-            actions || []
+            (actions || []).to_json
           end
 
           desc "List actions for a user in the app acl."
@@ -94,7 +93,7 @@ module DeboxServer
             optional :user, type: String, desc: "optional user. Require admin access."
           end
           get '/actions/:app' do
-            actions || []
+            (actions || []).to_json
           end
 
           # add action
