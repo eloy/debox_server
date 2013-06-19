@@ -8,6 +8,10 @@ gem 'capistrano'
 gem 'redis'
 gem 'log4r'
 
+group :development, :test do
+  gem 'mysql2'
+end
+
 group :development do
   gem 'pry'
 end
