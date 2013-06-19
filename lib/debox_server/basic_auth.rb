@@ -3,7 +3,10 @@ module DeboxServer
     # include DeboxServer::Users
 
     def authenticate!
-      error!("Access Denied", 401) unless logged_in?
+      unless logged_in?
+        log.info "Access denied: #{request.env}"
+        error!("Access Denied", 401)
+      end
     end
 
     def authenticate
@@ -32,6 +35,7 @@ module DeboxServer
       recipe = opt[:env] || current_env
       user = opt[:user] || current_user
       unless user.can? action, on: recipe
+        log.info "Forbidden"
         error!("Forbidden", 403)
       end
     end
