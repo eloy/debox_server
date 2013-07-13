@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+# Debox Server stable
+gem 'debox_server'
+
+# Or from git
+# gem 'debox_server', git: 'git://github.com/harlock/debox_server.git'
+
+# Use mysql2 as database for debox
+gem 'mysql2'
+
+# Include any gem with recipes
+# gem 'capistrano-node-deploy'

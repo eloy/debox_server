@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Add the private key to the ssh-agent
+ssh-add
+
+# Start the app
+RACK_ENV=production bundle exec rackup config.ru -p $PORT

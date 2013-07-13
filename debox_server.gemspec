@@ -24,5 +24,5 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'redis'
   gem.add_runtime_dependency 'activerecord', '>= 3.2.12'
   gem.add_runtime_dependency 'log4r'
-
+  gem.add_runtime_dependency 'thor'
 end

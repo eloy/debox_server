@@ -1,0 +1,6 @@
+#!/usr/bin/env rake
+
+ENV['DEBOX_ROOT'] ||= File.dirname __FILE__
+
+require 'debox_server'
+require 'debox_server/rake/tasks'
