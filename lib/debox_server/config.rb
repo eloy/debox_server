@@ -2,7 +2,7 @@ module DeboxServer
   module Config
 
     def self.debox_root
-      ENV['DEBOX_ROOT']
+      @@debox_root ||= ENV['DEBOX_ROOT'] || File.expand_path("../../../", __FILE__)
     end
 
     def debox_root
