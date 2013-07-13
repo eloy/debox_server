@@ -25,7 +25,7 @@ describe '/v1/log' do
     login_as_admin
     get '/v1/log/test/production'
     last_response.should be_ok
-    last_response.body.should match 'Some log content'
+    last_response.body.should eq 'Some log content'
   end
 
 
@@ -37,7 +37,7 @@ describe '/v1/log' do
     login_as_admin
     get '/v1/log/test'
     last_response.should be_ok
-    last_response.body.should match 'Some log content'
+    last_response.body.should eq 'Some log content'
   end
 
 
