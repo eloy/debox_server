@@ -6,7 +6,7 @@ class CreateJobs < ActiveRecord::Migration
       t.datetime :start_time
       t.datetime :end_time
       t.boolean :success
-      t.text :log
+      t.binary :log, limit: 1048576
       t.text :error
       t.text :config
 
