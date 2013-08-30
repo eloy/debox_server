@@ -4,4 +4,4 @@
 ssh-add
 
 # Start the app
-RACK_ENV=production bundle exec rackup config.ru -p $PORT
+RACK_ENV=production bundle exec rackup config.ru -p $PORT -o 127.0.0.1
