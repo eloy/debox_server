@@ -15,9 +15,9 @@ module DeboxServer
         helpers do
           def detailed_apps_list
             apps = []
-            apps_list.each do |app|
-              recipes = recipes_list app
-              apps << { app: app, envs: recipes }
+            App.all.each do |app|
+              recipes = app.recipe_names
+              apps << { app: app.name, envs: recipes }
             end
             return apps
           end

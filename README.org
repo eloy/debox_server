@@ -1,0 +1,17 @@
+** Installation
+*** Install required packages
+: sudo apt-get install mysql-server-5.5 libmysqlclient-dev nginx python-software-properties
+
+*** Setup MySQL
+: mysqladmin create debox
+: mysql -u root mysql -e "grant all privileges on debox.* to 'debox'@'localhost' identified by 'DEBOX_USER_PASSWORD'"
+: mysqladmin -u root flush-privileges
+
+*** Migrate
+: RACK_ENV=production bundle exec rake db:migrate
+
+*** Create a user
+Add the user
+: sudo useradd debox --home /opt/debox_server
+
+*** Start the service

@@ -14,19 +14,18 @@ describe '/v1/log' do
     login_as_admin
     get '/v1/log/test/production'
     last_response.should_not be_ok
-    last_response.body.should match 'Log not found'
+    last_response.body.should match 'job not found'
   end
 
   it 'should return log content' do
     out = OpenStruct.new time: DateTime.now, success: true, buffer: 'Some log content', error: 'Log result'
     server.create_recipe('test', 'production', 'content')
     job = stubbed_job 'test', 'production', 'deploy', out
-    job.save_log
 
     login_as_admin
     get '/v1/log/test/production'
     last_response.should be_ok
-    last_response.body.should match 'Some log content'
+    last_response.body.should eq 'Some log content'
   end
 
 
@@ -34,12 +33,11 @@ describe '/v1/log' do
     out = OpenStruct.new time: DateTime.now, success: true, buffer: 'Some log content', error: 'Log result'
     server.create_recipe('test', 'production', 'content')
     job = stubbed_job 'test', 'production', 'deploy', out
-    job.save_log
 
     login_as_admin
     get '/v1/log/test'
     last_response.should be_ok
-    last_response.body.should match 'Some log content'
+    last_response.body.should eq 'Some log content'
   end
 
 

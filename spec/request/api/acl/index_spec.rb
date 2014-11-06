@@ -6,8 +6,8 @@ describe '/v1/acl/actions' do
   context 'withount env' do
     it 'should remove the role to the user' do
       user = create_user
-      server.create_recipe('test', 'prod', 'content')
-      server.acl_add 'test', 'prod', user, :cap
+      recipe = server.create_recipe('test', 'prod', 'content')
+      create :permission, user: user, recipe: recipe, action: 'cap'
       login_as_user user
       get "/v1/acl/actions/test"
       last_response.should be_ok
@@ -18,8 +18,8 @@ describe '/v1/acl/actions' do
   context 'with env' do
     it 'should remove the role to the user' do
       user = create_user
-      server.create_recipe('test', 'prod', 'content')
-      server.acl_add 'test', 'prod', user, :cap
+      recipe = server.create_recipe('test', 'prod', 'content')
+      create :permission, user: user, recipe: recipe, action: 'cap'
       login_as_user user
       get "/v1/acl/actions/test/prod"
       last_response.should be_ok
@@ -30,8 +30,8 @@ describe '/v1/acl/actions' do
   it "Users can't set user param" do
     user = create_user
     other_user = create_user
-    server.create_recipe('test', 'prod', 'content')
-    server.acl_add 'test', 'prod', other_user, :cap
+    recipe = server.create_recipe('test', 'prod', 'content')
+    create :permission, user: other_user, recipe: recipe, action: 'cap'
     login_as_user user
     get "/v1/acl/actions/test/prod", user: other_user.email
     last_response.should be_ok
@@ -41,8 +41,8 @@ describe '/v1/acl/actions' do
   it "Admins can set user param" do
     user = create_admin
     other_user = create_user
-    server.create_recipe('test', 'prod', 'content')
-    server.acl_add 'test', 'prod', other_user, :cap
+    recipe = server.create_recipe('test', 'prod', 'content')
+    create :permission, user: other_user, recipe: recipe, action: 'cap'
     login_as_user user
     get "/v1/acl/actions/test/prod", user: other_user.email
     last_response.should be_ok

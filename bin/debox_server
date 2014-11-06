@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+require 'thor'
+
+module  DeboxServerBootstrap
+
+  # Create a debox project in the given dir
+  def boostrap_server
+    if Dir.exists? @debox_root
+      say("#{@debox_root} already exists") && return
+    end
+
+    Dir.mkdir(@debox_root) || say("Can't create dir #{@debox_root}") && return
+
+
+    create_server_dir_layout
+    copy_server_files
+    bootstrap_upstart
+  end
+
+  def bootstrap_upstart(opt={})
+    port = opt[:port] || 9292
+    user = opt[:user] || 'debox'
+
+    buff = File.read File.join(bootstrap_dir, 'upstart', 'debox.conf')
+    buff.gsub! '%DEBOX_ROOT%', debox_root
+    buff.gsub! '%DEBOX_PORT%', port.to_s
+    buff.gsub! '%DEBOX_USER%', user
+
+    f = File.open File.join(debox_root, 'upstart', 'debox.conf'), 'w'
+    f.write buff
+    f.close
+  end
+
+  private
+
+  def debox_root
+    @debox_root
+  end
+
+  def bootstrap_dir
+    File.join File.dirname(__FILE__), '../', 'bootstrap'
+  end
+
+  def create_server_dir_layout
+    ['capistrano', 'config', 'templates', 'bin', 'upstart'].each do |dir|
+      target_dir = File.join(debox_root, dir)
+      Dir.mkdir target_dir
+      say "new dir: #{target_dir}"
+    end
+  end
+
+  def copy_server_files
+    server_templates = File.join bootstrap_dir , 'debox_server'
+    ['Gemfile', 'Rakefile', 'config.ru', 'templates/recipe_new.rb.erb', 'bin/deboxd', 'config/database.yml'].each do |file|
+      target_file = File.join(debox_root, file)
+      FileUtils.cp File.join(server_templates, file), target_file
+      say "new file: #{target_file}"
+    end
+
+    # Set permissions to bin/deboxd
+    FileUtils.chmod 0755, File.join(debox_root, 'bin', 'deboxd')
+  end
+end
+
+
+
+class DeboxServerCLI < Thor
+  include Thor::Actions
+  include DeboxServerBootstrap
+
+  desc "bootstrap", "Create a new debox server DIRECTORY (default debox_server)"
+  def bootstrap(directory="debox_server")
+
+    @debox_root = directory
+    boostrap_server
+  end
+end
+
+DeboxServerCLI.start(ARGV)

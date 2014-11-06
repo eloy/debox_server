@@ -1,9 +1,12 @@
 module DeboxServer
   module BasicAuth
-    include DeboxServer::Users
+    # include DeboxServer::Users
 
     def authenticate!
-      error!("Access Denied", 401) unless logged_in?
+      unless logged_in?
+        log.info "Access denied: #{request.env}"
+        error!("Access Denied", 401)
+      end
     end
 
     def authenticate
@@ -29,9 +32,10 @@ module DeboxServer
 
     def require_auth_for(action, opt = { })
       app = opt[:app] || current_app
-      env = opt[:env] || current_env
+      recipe = opt[:env] || current_env
       user = opt[:user] || current_user
-      unless acl_allow? app, env, user, action
+      unless user.can? action, on: recipe
+        log.info "Forbidden"
         error!("Forbidden", 403)
       end
     end

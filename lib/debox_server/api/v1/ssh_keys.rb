@@ -5,7 +5,6 @@ module DeboxServer
       class SshKeys < Grape::API
 
         version 'v1'
-        format :json
 
         before do
           authenticate!

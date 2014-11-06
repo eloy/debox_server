@@ -5,7 +5,6 @@ module DeboxServer
       class ACL < Grape::API
 
         version 'v1'
-        format :json
 
         before do
           authenticate!
@@ -19,9 +18,9 @@ module DeboxServer
             user = current_user
             # Admins can override users
             if params[:user] && current_user.admin
-              user = find_user params[:user]
+              user = User.find_by_email params[:user]
             end
-            if acl_allow? current_app, current_env, user, action
+            if user.can? action, on: current_env
               return "YES"
             else
               error!("User is not allowed to run this action", 403)
@@ -32,23 +31,25 @@ module DeboxServer
             user = current_user
             # Admins can override users
             if params[:user] && current_user.admin
-              user = find_user params[:user]
+              user = User.find_by_email params[:user]
             end
-            acl_find current_app, current_env, user
+            user.permissions.map(&:action)
           end
 
-          def add_action(action, user_id)
+          def add_action(action, email)
             require_admin
-            user = find_user user_id
+            user = User.find_by_email email
             error!("User not found", 400) unless user
-            acl_add current_app, current_env, user, action
+            user.permissions.create(recipe: current_env, action: action)
           end
 
           def remove_action(action, user_id)
             require_admin
-            user = find_user user_id
+            user = User.find_by_email user_id
             error!("User not found", 400) unless user
-            acl_remove current_app, current_env, user, action.to_sym
+            permission = user.permissions_for_recipe(current_env).where(action: action).first
+            error!("Permission not found", 400) unless permission
+            permission.destroy
           end
 
         end
@@ -84,7 +85,7 @@ module DeboxServer
             optional :user, type: String, desc: "optional user. Require admin access."
           end
           get '/actions/:app/:env' do
-            actions || []
+            (actions || []).to_json
           end
 
           desc "List actions for a user in the app acl."
@@ -92,7 +93,7 @@ module DeboxServer
             optional :user, type: String, desc: "optional user. Require admin access."
           end
           get '/actions/:app' do
-            actions || []
+            (actions || []).to_json
           end
 
           # add action

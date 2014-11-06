@@ -5,7 +5,6 @@ module DeboxServer
       class Recipes < Grape::API
 
         version 'v1'
-        format :json
 
         before do
           authenticate!
@@ -16,7 +15,8 @@ module DeboxServer
 
           desc "List all the recipes configured for the app"
           get "/:app" do
-            recipes_list(params[:app])
+            app = App.find_by_name! params[:app]
+            app.recipe_names.to_json
           end
 
           desc "Show a recipe"

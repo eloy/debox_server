@@ -5,19 +5,18 @@ module DeboxServer
     RECIPE_TEMPLATE = 'recipe_new.rb.erb'
 
     # Create a new recipe
-    def create_recipe(app, env, content)
-      return false if recipe_exists? app, env
-      redis.hsetnx recipe_app_key(app), env, content
-      # Add app if no present
-      apps_create app
-      redis_save
+    def create_recipe(app_name, name, content)
+      app = App.find_by_name_or_create(app_name)
+      recipe = Recipe.create app: app, name: name, content: content
+      return false unless recipe.valid?
+      return recipe
     end
 
     # Update recipe if present
-    def update_recipe(app, env, content)
-      return false unless recipe_exists? app, env
-      redis.hset recipe_app_key(app), env, content
-      redis_save
+    def update_recipe(app_name, name, content)
+      app = App.find_by_name! app_name
+      recipe = app.recipes.find_by_name! name
+      recipe.update_attributes content: content
     end
 
     # Create recipe if not present
@@ -26,24 +25,17 @@ module DeboxServer
       recipe.result binding
     end
 
-    def recipes_destroy(app, env)
-      redis.hdel recipe_app_key(app), env
-      redis_save
-    end
-
-    # Return true if one recipe for the given app and env
-    # exits
-    def recipe_exists?(app, env)
-      redis.hexists recipe_app_key(app), env
+    def recipes_destroy(app_name, name)
+      app = App.find_by_name! app_name
+      recipe = app.recipes.find_by_name! name
+      recipe.destroy
     end
 
     # Return the recipe content
-    def recipe_content(app, env)
-      redis.hget(recipe_app_key(app), env) || false
-    end
-
-    def recipes_list(app)
-      redis.hkeys recipe_app_key(app)
+    def recipe_content(app_name, name)
+      app = App.find_by_name! app_name
+      recipe = app.recipes.find_by_name! name
+      recipe.content
     end
 
     def recipe_app_key(app)
@@ -55,7 +47,7 @@ module DeboxServer
     end
 
     def recipe_template_content
-      name = File.join DEBOX_ROOT, 'assets', RECIPE_TEMPLATE
+      name = File.join Config.debox_root, 'templates', RECIPE_TEMPLATE
       File.open(name).read
     end
 
