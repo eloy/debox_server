@@ -20,9 +20,10 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'grape','~> 0.5.0'
   gem.add_runtime_dependency 'thin'
   gem.add_runtime_dependency 'json'
-  gem.add_runtime_dependency 'capistrano'
+  gem.add_runtime_dependency 'capistrano', '~> 2.15.5'
   gem.add_runtime_dependency 'redis'
-  gem.add_runtime_dependency 'activerecord', '>= 3.2.12'
+  gem.add_runtime_dependency 'activerecord', '~> 3.2.12'
   gem.add_runtime_dependency 'log4r'
   gem.add_runtime_dependency 'thor'
+  gem.add_runtime_dependency 'jbuilder'
 end

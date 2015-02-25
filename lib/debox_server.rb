@@ -1,7 +1,7 @@
 require 'json'
 require 'fileutils'
 require 'erb'
-
+require 'jbuilder'
 require 'grape'
 
 require "debox_server/version"
