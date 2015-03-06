@@ -26,4 +26,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'log4r'
   gem.add_runtime_dependency 'thor'
   gem.add_runtime_dependency 'jbuilder'
+  gem.add_runtime_dependency 'sprockets'
+  gem.add_runtime_dependency 'coffee-script'
+  gem.add_runtime_dependency 'sass'
 end
