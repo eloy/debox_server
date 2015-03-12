@@ -1,0 +1,11 @@
+<h1 class="page-headers">{{app}} - {{env}}</h1>
+
+<env-navbar></env-navbar>
+<div id="logs" repeat="log in logs">
+  <div class="log">
+    <div class="header">
+      <strong>{{log.task}}</strong>
+      {{moment(log.created_at).format('LLL')}}
+    </div>
+  </div>
+</div>
