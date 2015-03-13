@@ -8,7 +8,7 @@ class Job < ActiveRecord::Base
   #----------------------------------------------------------------------
 
   belongs_to :recipe
-
+  scope :success, ->{ where success: true }
 
   def to_jbuilder(opt={  })
     Jbuilder.new do |json|

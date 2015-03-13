@@ -11,6 +11,13 @@ module DeboxServer
           require_admin
         end
 
+        format :json
+        desc "Show status"
+        get "/apps/:app/envs/:env" do
+          current_env.to_jbuilder.attributes!
+        end
+
+
         resource :recipes do
 
           desc "List all the recipes configured for the app"

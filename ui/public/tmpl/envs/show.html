@@ -1,6 +1,11 @@
-<button class="btn btn-success pull-right" click="cap('deploy')">Deploy</button>
+
 <h1 class="page-headers">{{app}} - {{env}}</h1>
 
 <env-navbar></env-navbar>
+<env-state></env-state>
+<button class="btn btn-success pull-right" click="cap('deploy')">Deploy</button>
 
-Overview
+<div id="last_deploy" if="status.last_job">
+  <bold>Deployed</bold> {{moment(status.last_job.created_at).format('LLL')}}
+
+</div>
