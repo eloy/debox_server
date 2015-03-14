@@ -11,10 +11,16 @@ module DeboxServer
           require_admin
         end
 
-        format :json
         desc "Show status"
         get "/apps/:app/envs/:env" do
+          content_type 'application/json'
           current_env.to_jbuilder.attributes!
+        end
+
+        desc "Show tasks"
+        get "/apps/:app/envs/:env/tasks" do
+          content_type 'application/json'
+          current_env.tasks
         end
 
 
