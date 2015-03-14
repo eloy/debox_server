@@ -20353,8 +20353,8 @@ UnicoContext = (function() {
   UnicoContext.prototype.set = function(target, v) {
     var exp, value;
     value = v;
-    if (typeof n !== "number") {
-      value = "'" + value + "'";
+    if (typeof v !== "number") {
+      value = "unescape('" + (escape(v)) + "')";
     }
     exp = "" + target + " = " + value;
     this["eval"](exp);

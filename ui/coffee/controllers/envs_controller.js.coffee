@@ -1,23 +1,44 @@
 class Show
   constructor: (@ctx) ->
     @Cap = app.model 'cap'
+    @Env = app.model 'envs'
     @app = @ctx.params.app_id
     @env = @ctx.params.id
 
+    @state = app.liveLogger.state(@app, @env)
+
+    # Overview
+    #----------------------------------------------------------------------
+
+    @overview = {}
+    @Env.get(app: @app, env: @env).done (data) =>
+      @overview = data
+      @ctx.app.refresh()
+
+    # Tasks
+    #----------------------------------------------------------------------
+
+    @tasks = []
+    @Env.get(app: @app, env: @env, action: 'tasks').done (data) =>
+      @tasks = data
+      @ctx.app.refresh()
+
+
+
   cap: (task) ->
-    @Cap.get(app: @app, env: @env, task: task).done (data) ->
+    @Cap.get({app: @app, env: @env}, {task: task}).done (data) ->
       console.log data
 
 
 class Recipe
   constructor: (@ctx) ->
-    @Envs = app.model 'recipes'
+    @Recipes = app.model 'recipes'
     @app = @ctx.params.app_id
     @env = @ctx.params.env_id
     @recipe = undefined
     @editMode = false
 
-    @Envs.get(app: @app, env: @env).done (data) =>
+    @Recipes.get(app: @app, env: @env).done (data) =>
       @recipe = data
       @ctx.app.refresh()
 
@@ -28,7 +49,7 @@ class Recipe
     @editMode = false
 
   save: ->
-    @Envs.put({app: @app, env: @env}, {content: @recipe}).done (data) =>
+    @Recipes.put({app: @app, env: @env}, {content: @recipe}).done (data) =>
       @close()
       @ctx.app.refresh()
 

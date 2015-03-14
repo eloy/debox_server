@@ -1,11 +1,28 @@
-
 <h1 class="page-headers">{{app}} - {{env}}</h1>
 
-<env-navbar></env-navbar>
+<env-navbar env="{{env}}"></env-navbar>
 <env-state></env-state>
-<button class="btn btn-success pull-right" click="cap('deploy')">Deploy</button>
 
-<div id="last_deploy" if="status.last_job">
-  <bold>Deployed</bold> {{moment(status.last_job.created_at).format('LLL')}}
 
+
+
+<div id="last_deploy" if="overview.last_job">
+  <bold>Deployed</bold> {{moment(overview.last_job.created_at).format('LLL')}}
+</div>
+
+<div id="tasks" repeat="task in tasks">
+  <div>
+    <h4>
+      <button class="btn btn-default btn-sm" click="cap(task.name)">Run</button>
+      {{task.name}}
+      <small>{{task.description}}</small>
+
+    </h4>
+    <p>{{task.long_description}}</p>
+    <hr/>
+  </div>
+</div>
+
+<div id="live_log" if="state.job">
+  <pre>{{state.log}}</pre>
 </div>
