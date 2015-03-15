@@ -77,15 +77,26 @@ module  DeboxServerBootstrap
     target_public_dir = File.join(debox_root, 'public')
     public_dir = File.join(ui_dir, 'public')
     FileUtils.cp_r public_dir, target_public_dir
+    build_assets(target_public_dir)
+  end
 
+
+  def build_assets(target_public_dir)
     assets_dir = File.join(target_public_dir, 'assets')
     environment = DeboxServer::AssetsServer.build_spockets(gem_root)
     environment.logger = Logger.new($stderr)
     environment.logger.level = Logger::INFO
     manifest = Sprockets::Manifest.new(environment.index, assets_dir)
     manifest.compile ["application.js", "application.css"]
+    build_index(target_public_dir, manifest)
   end
 
+  def build_index(target_public_dir, manifest)
+    index_path = File.join target_public_dir, 'index.html'
+    content = File.read(index_path)
+    content.gsub!(/[src|href]=\"\/assets\/([\w\.]+)\"/) { |m| manifest.assets[$1] ? m.gsub($1, manifest.assets[$1]) : m  }
+    File.write(index_path, content)
+  end
 end
 
 
@@ -100,6 +111,15 @@ class DeboxServerCLI < Thor
     @debox_root = directory
     boostrap_server
   end
+
+  desc "assets", "Precompile assets DIRECTORY (default debox_server)"
+  def assets(directory="debox_server")
+
+    @debox_root = directory
+    build_ui
+  end
+
+
 end
 
 DeboxServerCLI.start(ARGV)
