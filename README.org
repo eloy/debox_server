@@ -7,6 +7,10 @@
 : mysql -u root mysql -e "grant all privileges on debox.* to 'debox'@'localhost' identified by 'DEBOX_USER_PASSWORD'"
 : mysqladmin -u root flush-privileges
 
+*** Bootstrap a new server
+: gem install debox_server
+: debox_server bootstrap /opt/debox_server
+: cd /opt/debox_server
 *** Migrate
 : RACK_ENV=production bundle exec rake db:migrate
 
