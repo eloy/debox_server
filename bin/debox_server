@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 require 'thor'
+require 'sprockets'
+require 'logger'
+require 'debox_server/assets_server'
 
 module  DeboxServerBootstrap
 
@@ -14,6 +17,7 @@ module  DeboxServerBootstrap
 
     create_server_dir_layout
     copy_server_files
+    build_ui
     bootstrap_upstart
   end
 
@@ -37,8 +41,16 @@ module  DeboxServerBootstrap
     @debox_root
   end
 
+  def gem_root
+    File.join File.dirname(__FILE__), '../'
+  end
+
   def bootstrap_dir
     File.join File.dirname(__FILE__), '../', 'bootstrap'
+  end
+
+  def ui_dir
+    File.join File.dirname(__FILE__), '../', 'ui'
   end
 
   def create_server_dir_layout
@@ -60,6 +72,20 @@ module  DeboxServerBootstrap
     # Set permissions to bin/deboxd
     FileUtils.chmod 0755, File.join(debox_root, 'bin', 'deboxd')
   end
+
+  def build_ui
+    target_public_dir = File.join(debox_root, 'public')
+    public_dir = File.join(ui_dir, 'public')
+    FileUtils.cp_r public_dir, target_public_dir
+
+    assets_dir = File.join(target_public_dir, 'assets')
+    environment = DeboxServer::AssetsServer.build_spockets(gem_root)
+    environment.logger = Logger.new($stderr)
+    environment.logger.level = Logger::INFO
+    manifest = Sprockets::Manifest.new(environment.index, assets_dir)
+    manifest.compile ["application.js", "application.css"]
+  end
+
 end
 
 

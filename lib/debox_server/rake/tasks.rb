@@ -1,4 +1,6 @@
 require 'rake'
+require 'debox_server/assets_server'
+require 'rake/sprocketstask'
 
 # User management
 #----------------------------------------------------------------------
@@ -191,4 +193,14 @@ namespace :import do
       end
     end
   end
+end
+
+
+# Sprockets
+#----------------------------------------------------------------------
+
+Rake::SprocketsTask.new do |t|
+  t.environment = DeboxServer::AssetsServer.build_spockets(ENV['DEBOX_ROOT'])
+  t.output      = File.join ENV['DEBOX_ROOT'], 'ui', 'public', 'assets'
+  t.assets      = %w( application.js application.css )
 end
