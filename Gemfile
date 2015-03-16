@@ -24,6 +24,7 @@ group :test do
   gem 'capybara'
   gem 'capybara-webkit'
   gem 'database_cleaner'
+  gem 'minitest'
   gem 'shoulda-matchers'
 end
 

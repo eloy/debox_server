@@ -10,6 +10,7 @@ require 'rspec'
 require 'rack/test'
 require 'factory_girl'
 require 'database_cleaner'
+require 'minitest'
 require 'shoulda-matchers'
 require "debox_server/api"
 require 'debox_server/test_helper'
