@@ -2,10 +2,17 @@
 
 <env-navbar></env-navbar>
 <div id="logs" repeat="log in logs">
-  <div class="log">
-    <div class="header">
-      <strong>{{log.task}}</strong>
-      {{moment(log.created_at).format('LLL')}}
+  <div class="log {{log.success ? 'log-success' : 'log-failed'}}">
+    <h4>
+      {{log.task}}
+      <small>
+        <a href="/apps/{{app}}/envs/{{env}}/logs/{{log.id}}">{{moment(log.created_at).format('LLL')}}</a>
+      </small>
+    </h4>
+
+      <span class="text-success" if="log.success">DONE</span>
+      <span class="text-danger" unless="log.success">{{log.error}}</span>
+
     </div>
   </div>
 </div>

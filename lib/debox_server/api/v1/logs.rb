@@ -15,7 +15,7 @@ module DeboxServer
 
           def get_logs_helper(recipe)
             recipe.jobs.order('id desc').map do |job|
-              job.to_jbuilder(no_logs: true).attributes!
+              job.to_jbuilder(no_log: true).attributes!
             end
           end
 

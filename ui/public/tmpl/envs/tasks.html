@@ -1,0 +1,16 @@
+<h1 class="page-headers">{{app}} - {{env}}</h1>
+
+<env-navbar env="{{env}}"></env-navbar>
+
+<div id="tasks" repeat="task in tasks">
+  <div>
+    <h4>
+      <button class="btn btn-default btn-sm" click="cap(task.name)">Run</button>
+      {{task.name}}
+      <small>{{task.description}}</small>
+
+    </h4>
+    <p>{{task.long_description}}</p>
+    <hr/>
+  </div>
+</div>

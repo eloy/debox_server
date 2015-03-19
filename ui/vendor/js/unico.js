@@ -19560,7 +19560,7 @@ MetaElement = (function() {
     var childs, lastPos;
     childs = [];
     lastPos = 0;
-    content.replace(/{{([\s\w\d\[\]_\(\)\.\$\?\=\!:"']+)}}/g, (function(_this) {
+    content.replace(/{{([\s\w\d\[\]_\-\(\)\.\$\?\=\!:"']+)}}/g, (function(_this) {
       return function(match, capture, pos) {
         if (pos > lastPos) {
           childs.push({
@@ -19753,7 +19753,7 @@ Request = function(method, url, data, opt) {
     r.onreadystatechange = function() {
       var error;
       if (r.readyState === 4) {
-        if (r.status === 200) {
+        if (r.status >= 200 || r.status <= 299) {
           return callback(r.responseText);
         } else {
           error = new Error('Server responded with a status of ' + r.status);
@@ -20365,7 +20365,7 @@ UnicoContext = (function() {
   };
 
   UnicoContext.prototype.interpolate = function(html) {
-    return html.replace(/{{([\s\w\d\[\]_\(\)\.\$\?\=\!:"']+)}}/g, (function(_this) {
+    return html.replace(/{{([\s\w\d\[\]_\-\(\)\.\$\?\=\!:"']+)}}/g, (function(_this) {
       return function(match, capture) {
         return _this["eval"](capture) || '';
       };
