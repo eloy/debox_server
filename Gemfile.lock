@@ -158,21 +158,14 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  capistrano (~> 2.15.5)
   capybara
   capybara-webkit
   database_cleaner
   debox_server!
   factory_girl
-  grape
-  json
-  log4r
   minitest
   mysql2
   pry
-  rack
   rack-test
-  redis
   rspec (~> 2.13.0)
   shoulda-matchers
-  thin
