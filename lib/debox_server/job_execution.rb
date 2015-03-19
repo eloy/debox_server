@@ -8,11 +8,22 @@ module DeboxServer
   module JobExecution
 
     def start
+      @thread = Thread.current
       execute_task
       update_job_status
       unsubscribe_all
       trigger_on_finish
       return self
+    end
+
+    # TODO: Refactor?
+    def kill!
+      @thread.kill
+      self.error = "Stoped by user."
+      update_job_status
+      unsubscribe_all
+      trigger_on_finish
+      @queue_callback.call(self)
     end
 
     # Current job output

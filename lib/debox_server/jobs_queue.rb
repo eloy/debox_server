@@ -73,7 +73,7 @@ module DeboxServer
       processor = proc { |job|
         log.debug "Starting job #{job.id}"
 
-        callback = proc do |job|
+        job.queue_callback = proc do |job|
           log.debug "Job #{job.id} finished"
           notifier.finished job
           jobs.delete job # Remove job from jobs queue
@@ -87,7 +87,7 @@ module DeboxServer
         job.subscribe do |msg|
           notifier.stdout job, data: msg
         end
-        EM::defer proc { job.start }, callback
+        EM::defer proc { job.start }, job.queue_callback
       }
 
       # Pop first element for start the process

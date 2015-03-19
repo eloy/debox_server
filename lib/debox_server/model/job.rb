@@ -3,6 +3,7 @@ require "debox_server/job_execution"
 class Job < ActiveRecord::Base
 
   include DeboxServer::JobExecution
+  attr_accessor :queue_callback
 
   # associations
   #----------------------------------------------------------------------
