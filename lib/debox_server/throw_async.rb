@@ -96,6 +96,7 @@ module ThrowEventSource
 
   def keep_alive(timeout=5)
     @timer = EM::PeriodicTimer.new(timeout) do
+      # chunk({connections: ActiveRecord::Base.connection_pool.connections.count}.to_json
       body.push ":\n"
     end
   end

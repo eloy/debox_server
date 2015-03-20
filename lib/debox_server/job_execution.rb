@@ -64,7 +64,9 @@ module DeboxServer
     protected
 
     def set_started!
-      self.update_attributes start_time: DateTime.now, config: extract_capistrano_config
+      ActiveRecord::Base.connection_pool.with_connection {
+        self.update_attributes start_time: DateTime.now, config: extract_capistrano_config
+      }
     end
 
     # Return a hash with configs from capistrano
