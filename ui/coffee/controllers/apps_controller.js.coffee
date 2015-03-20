@@ -1,11 +1,11 @@
 class Show
   constructor: (@ctx) ->
-    @Envs = app.model 'recipes'
+    @Apps = app.model 'apps'
     @app = @ctx.params.id
-    @envs = []
-    @Envs.get(app: @app).done (data) =>
+    @appData = {}
+    @Apps.get(id: @app).done (data) =>
       console.log data
-      @envs = data
+      @appData = data
       @ctx.app.refresh()
 
 

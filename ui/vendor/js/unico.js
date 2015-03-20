@@ -19560,7 +19560,7 @@ MetaElement = (function() {
     var childs, lastPos;
     childs = [];
     lastPos = 0;
-    content.replace(/{{([\s\w\d\[\]_\-\(\)\.\$\?\=\!:"']+)}}/g, (function(_this) {
+    content.replace(/{{([\s\w\d\[\]_\-\(\)\.,\$\?\=\!:"']+)}}/g, (function(_this) {
       return function(match, capture, pos) {
         if (pos > lastPos) {
           childs.push({
@@ -20365,7 +20365,7 @@ UnicoContext = (function() {
   };
 
   UnicoContext.prototype.interpolate = function(html) {
-    return html.replace(/{{([\s\w\d\[\]_\-\(\)\.\$\?\=\!:"']+)}}/g, (function(_this) {
+    return html.replace(/{{([\s\w\d\[\]_\-\(\)\.,\$\?\=\!:"']+)}}/g, (function(_this) {
       return function(match, capture) {
         return _this["eval"](capture) || '';
       };
@@ -20570,8 +20570,11 @@ HrefDirective = (function() {
     }
     return meta.attrs['onClick'] = function(ev) {
       var url;
-      ev.preventDefault();
       url = ev.nativeEvent.currentTarget.activeElement.attributes.href.value;
+      if (!!url.match(/^[\w]+:\/\//)) {
+        return true;
+      }
+      ev.preventDefault();
       return ctx.app.visit(url);
     };
   };

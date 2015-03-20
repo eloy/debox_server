@@ -1,14 +1,22 @@
-<h1 class="page-headers">{{app}} - {{env}}</h1>
+<h1 class="page-headers" id="env-header">
+  <a href="/apps/{{app}}">{{app}}</a> - {{env}}
+  <small>
+    <env-state class="env-state" env="{{env}}" app="{{app}}"></env-state>
+  </small>
+</h1>
 
 <env-navbar env="{{env}}"></env-navbar>
-<env-state></env-state>
 
 <div class="row">
   <div class="col-md-6">
     <h3>Overview</h3>
     <div id="last_deploy" if="overview.last_job">
-      <bold>Deployed</bold> {{moment(overview.last_job.created_at).format('LLL')}}
+      Last execution: <strong>{{overview.last_job.task}}</strong> on
+      <a href="/apps/{{app}}/envs/{{env.name}}/logs/{{overview.last_job.id}}">
+        {{moment(overview.last_job.start_time).format('LLL')}}
+      </a>
     </div>
+    <job-details config="overview.last_job.config"></job-details>
   </div>
 
   <div class="col-md-6">
@@ -27,6 +35,7 @@
 
 
 <div id="live_log" if="state.job">
-  <button class="btn btn-danger btn-sm" click="stop(state.job.id)">Stop</button>
+  <button class="btn btn-danger btn-sm pull-right" click="stop(state.job.id)" if="state.running">Stop</button>
+  <h3>Console</h3>
   <pre class="stdout">{{state.log}}</pre>
 </div>

@@ -1,4 +1,9 @@
-<h1 class="page-headers">{{app}} - {{env}}</h1>
+<h1 class="page-headers" id="env-header">
+  <a href="/apps/{{app}}">{{app}}</a> - {{env}}
+  <small>
+    <env-state class="env-state" env="{{env}}" app="{{app}}"></env-state>
+  </small>
+</h1>
 
 <env-navbar></env-navbar>
 <!-- Read Mode -->

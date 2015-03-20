@@ -1,5 +1,5 @@
 tmpl = '''
-{{state()}}
+<span class="label label-success" if="state(app, env).running">{{state(app, env).job.task}}</span>
 '''
 
 class EnvStateComponent
@@ -9,7 +9,7 @@ class EnvStateComponent
     @env = meta.attrs.env
     @app = meta.attrs.app
 
-  state: ->
-    if app.liveLogger.state(@app, @env).running then "running" else ""
+  state: (appName, envName)->
+    app.liveLogger.state(appName, envName)
 
 app.addComponent 'env-state', EnvStateComponent

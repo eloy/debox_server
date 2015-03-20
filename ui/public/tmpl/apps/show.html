@@ -1,4 +1,16 @@
 <h1 class="page-headers">{{app}}</h1>
-<div id="envs" repeat="env in envs">
-  <a href="/apps/{{app}}/envs/{{env}}">{{env}}</a>
+<div id="envs" repeat="env in appData.envs">
+  <div class="env">
+    <h4>
+      <a href="/apps/{{app}}/envs/{{env.name}}">{{env.name}}</a>
+      <env-state class="env-state" env="{{env.name}}" app="{{app}}"></env-state>
+    </h4>
+    <div if="env.last_job">
+      Last execution: <strong>{{env.last_job.task}}</strong> on
+      <a href="/apps/{{app}}/envs/{{env.name}}/logs/{{env.last_job.id}}">
+        {{moment(env.last_job.start_time).format('LLL')}}
+      </a>
+      <job-details config="env.last_job.config"></job-details>
+    </div>
+  </div>
 </div>

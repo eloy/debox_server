@@ -55,8 +55,8 @@ class Tasks
 
 
   cap: (task) ->
-    @Cap.get({app: @app, env: @env}, {task: task}).done (data) ->
-      console.log data
+    @Cap.get({app: @app, env: @env}, {task: task}).done (data) =>
+      app.visit "/apps/#{@app}/envs/#{@env}"
 
 
 

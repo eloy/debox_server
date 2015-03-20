@@ -11,7 +11,14 @@ module DeboxServer
           require_admin
         end
 
-        desc "Show status"
+        desc "Show app status"
+        get "/apps/:app" do
+          content_type 'application/json'
+          current_app.to_jbuilder.attributes!
+        end
+
+
+        desc "Show env status"
         get "/apps/:app/envs/:env" do
           content_type 'application/json'
           current_env.to_jbuilder.attributes!

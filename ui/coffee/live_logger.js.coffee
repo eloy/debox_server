@@ -10,7 +10,6 @@ class LiveLogger
     Status = app.model 'status'
     Status.get().done (jobs) =>
       for job in jobs
-        console.log job
         state = @state(job.app_name, job.recipe_name)
         if job.started == true
           state.running = true
@@ -27,7 +26,7 @@ class LiveLogger
 
     es.onmessage = (event) =>
       data = JSON.parse event.data
-      console.log data
+
       job = data.job
       state = @state(job.app_name, job.recipe_name)
       if data.notification == 'stdout' && data.data
