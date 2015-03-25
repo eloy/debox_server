@@ -1,4 +1,4 @@
-class Show
+class Show extends Debox.BaseController
   constructor: (@ctx) ->
     window.pollo = @
     @Cap = app.model 'cap'
@@ -7,7 +7,7 @@ class Show
     @app = @ctx.params.app_id
     @env = @ctx.params.id
     @userTask = undefined
-    @state = app.liveLogger.state(@app, @env)
+    @state = Debox.liveLogger.state(@app, @env)
 
     # Overview
     #----------------------------------------------------------------------
@@ -37,7 +37,7 @@ class Show
     @Job.post(app: @app, env: @env, id: id, action: 'stop').done (d) ->
       console.log d
 
-class Tasks
+class Tasks extends Debox.BaseController
   constructor: (@ctx) ->
     @Cap = app.model 'cap'
     @Env = app.model 'envs'
@@ -60,7 +60,7 @@ class Tasks
 
 
 
-class Recipe
+class Recipe extends Debox.BaseController
   constructor: (@ctx) ->
     @Recipes = app.model 'recipes'
     @app = @ctx.params.app_id
@@ -83,7 +83,7 @@ class Recipe
       @close()
       @ctx.app.refresh()
 
-class Logs
+class Logs extends Debox.BaseController
   constructor: (@ctx) ->
     @Logs = app.model 'logs'
     @app = @ctx.params.app_id
@@ -95,7 +95,7 @@ class Logs
       @logs = data
       @ctx.app.refresh()
 
-class Log
+class Log extends Debox.BaseController
   constructor: (@ctx) ->
     @Log = app.model 'log'
     @app = @ctx.params.app_id

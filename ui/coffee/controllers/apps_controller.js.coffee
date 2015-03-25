@@ -1,4 +1,4 @@
-class Show
+class Show extends Debox.BaseController
   constructor: (@ctx) ->
     @Apps = app.model 'apps'
     @app = @ctx.params.id

@@ -40,4 +40,4 @@ class LiveLogger
 
       app.refresh()
 
-app.liveLogger = new LiveLogger()
+Debox.liveLogger = new LiveLogger()

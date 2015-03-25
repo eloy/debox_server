@@ -1,11 +1,12 @@
-class SignInController
+class SignInController extends Debox.BaseController
   constructor: (@ctx) ->
     @auth = {}
     @Session = app.model('session')
 
   login: ->
     user = @auth.user
-    @Session.get({}, @auth).done (data) ->
+    @Session.post({}, @auth).done (data) ->
+      Debox.startSession()
       app.visit '/'
     @auth = {}
 

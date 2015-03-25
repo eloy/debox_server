@@ -10,6 +10,6 @@ class EnvStateComponent
     @app = meta.attrs.app
 
   state: (appName, envName)->
-    app.liveLogger.state(appName, envName)
+    Debox.liveLogger.state(appName, envName)
 
 app.addComponent 'env-state', EnvStateComponent

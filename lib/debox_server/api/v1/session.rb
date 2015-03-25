@@ -5,14 +5,20 @@ module DeboxServer
       class Sessions < Grape::API
 
         version 'v1'
-        format :txt
+        format :json
 
         desc "Login and return the api_key for the user"
-        get "/session/new" do
+        post "/session" do
           user = login_user(params[:user], params[:password])
           error!("Not authorized", 401) unless user
           write_cookie(user) # TODO: Move session to other endpoint
-          "OK"
+          user.to_jbuilder.attributes!
+        end
+
+        desc "Session information"
+        get "/session" do
+          authenticate!
+          current_user.to_jbuilder.attributes!
         end
 
       end

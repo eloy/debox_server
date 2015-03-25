@@ -1,6 +1,6 @@
-class SiteController
+class SiteController extends Debox.BaseController
   @beforeAction: () ->
-    unless app.getCookie 'debox_auth'
+    unless Debox.isLoggedIn()
       return redirect: '/sessions/sign_in'
 
   constructor: (@ctx) ->

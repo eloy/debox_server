@@ -1,5 +1,5 @@
 app.addModel 'status', '/v1/status'
-app.addModel 'session', '/v1/session/new'
+app.addModel 'session', '/v1/session'
 app.addModel 'apps', '/v1/apps/:id'
 app.addModel 'recipes', '/v1/recipes/:app/:env'
 app.addModel 'cap', '/v1/cap/:app/:env'
