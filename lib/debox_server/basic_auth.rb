@@ -75,7 +75,7 @@ module DeboxServer
       content = { email: user.email, api_key: user.api_key }.to_json
       cookies[:debox_auth] = {
         value: encrypt(content),
-        expires: Time.now+24*60*60,
+        expires: 1.year.from_now,
         path: '/'
       }
     end
