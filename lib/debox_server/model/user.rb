@@ -50,6 +50,25 @@ class User < ActiveRecord::Base
     return false
   end
 
+
+  # JSON
+  #----------------------------------------------------------------------
+
+  def to_jbuilder(opt={  })
+    Jbuilder.new do |json|
+      json.(self, :id, :email, :admin)
+      if opt[:verbose]
+        json.acl self.permissions.includes(:recipe) do |perm|
+          json.app_id perm.recipe.app_id
+          json.app perm.recipe.app.name
+          json.env_id perm.recipe_id
+          json.env perm.recipe.name
+          json.action perm.action
+        end
+      end
+    end
+  end
+
   private
 
   def create_api_key

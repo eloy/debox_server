@@ -26,5 +26,14 @@ module DeboxServer
 
       return @request_env
     end
+
+
+    def extract_params(key, keys)
+      keys = keys.map{|k| k.to_s  }
+      params[key].select do |k|
+        keys.include? k
+      end
+    end
+
   end
 end

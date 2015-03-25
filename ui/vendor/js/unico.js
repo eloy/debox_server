@@ -19644,11 +19644,6 @@ MetaElement = (function() {
       clazz.__template_meta || (clazz.__template_meta = MetaElement.fromStr(this.ctx, clazz.template));
       this.component.template = clazz.__template_meta;
     }
-    if (clazz.element) {
-      this.tag = clazz.element;
-    } else {
-      this.tag = 'div';
-    }
     this.component.directive = {
       clazz: clazz
     };
@@ -19954,7 +19949,7 @@ ReactFactory = {
     } else if (meta.component) {
       childCtx = ctx.child(meta.component.directive.instance);
       if (meta.component.template) {
-        content = this.buildElement(meta.component.template, childCtx);
+        return this.buildElement(meta.component.template, childCtx);
       } else if (meta.nodes) {
         content = this.buildNodes(meta.nodes, childCtx);
       }
@@ -20566,6 +20561,9 @@ HrefDirective = (function() {
 
   HrefDirective.prototype.build = function(ctx, meta) {
     if (!ctx.app.router) {
+      return true;
+    }
+    if (meta.attrs.click) {
       return true;
     }
     return meta.attrs['onClick'] = function(ev) {
