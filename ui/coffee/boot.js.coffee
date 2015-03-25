@@ -20,10 +20,19 @@ window.Debox =
 
 
 class BaseController
-  user: -> Debox.user
+  @beforeAction: () ->
+    unless Debox.isLoggedIn()
+      return redirect: '/sessions/sign_in'
+
+
+  user: -> Debox.user || {}
+
+
+class AdminController extends BaseController
+  layout: 'admin'
 
 window.Debox.BaseController = BaseController
-
+window.Debox.AdminController = AdminController
 
 window.onload = ->
   Debox.startSession() if Debox.isLoggedIn()

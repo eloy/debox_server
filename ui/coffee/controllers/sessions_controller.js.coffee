@@ -1,4 +1,6 @@
 class SignInController extends Debox.BaseController
+  @beforeAction: ->
+
   constructor: (@ctx) ->
     @auth = {}
     @Session = app.model('session')

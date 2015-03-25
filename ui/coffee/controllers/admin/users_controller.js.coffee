@@ -1,15 +1,15 @@
-class Index
+class Index extends Debox.AdminController
+
   constructor: (@ctx) ->
     @model = app.model 'users'
     @users = []
     @model.index().done (data) =>
-      console.log data
       @users = data
       @ctx.app.refresh()
 
 
 
-class Show
+class Show extends Debox.AdminController
   constructor: (@ctx) ->
     @model = app.model 'users'
     @user = {}
@@ -17,7 +17,7 @@ class Show
       @user = data
       @ctx.app.refresh()
 
-class Edit
+class Edit extends Debox.AdminController
   constructor: (@ctx) ->
     @model = app.model 'users'
     @user = {}
@@ -27,8 +27,8 @@ class Edit
 
   submit: ->
     @model.put({id: @ctx.params.id},{ user: @user}).done (data) =>
-      console.log data
+      app.visit "/admin/users/#{@ctx.params.id}"
 
-app.addController 'users#index', Index
-app.addController 'users#show', Show
-app.addController 'users#edit', Edit
+app.addController 'admin_users#index', Index
+app.addController 'admin_users#show', Show
+app.addController 'admin_users#edit', Edit

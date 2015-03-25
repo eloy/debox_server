@@ -1,7 +1,7 @@
 <h1 class="page-header">
   {{user.email}}
   <small if="user.admin">Admin</small>
-  <a href="/users/{{user.id}}/edit" class="btn btn-default pull-right">Edit</a>
+  <a href="/admin/users/{{user.id}}/edit" class="btn btn-default pull-right">Edit</a>
 </h1>
 
 <div id="acl" unless="user.admin">

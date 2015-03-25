@@ -12,4 +12,5 @@ router.resources 'apps', {}, (member, collection) ->
 
     member.route '/recipe', partial: '/envs/recipe.html', controller: 'envs#recipe'
 
-router.resources 'users'
+router.route '/admin', partial: '/admin/index.html', controller: 'admin_dashboard', namespace: 'admin', (admin) ->
+  admin.resources 'users'
