@@ -2,6 +2,7 @@ module DeboxServer
   class AssetsServer
 
     def initialize(options)
+      options[:header_rules] = { all: { "cache-control" => "no-cache" } }
       @static = ::Rack::Static.new(lambda { [404, {}, []] }, options)
     end
 
