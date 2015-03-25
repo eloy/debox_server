@@ -12,7 +12,7 @@ class BitbucketParser
 
 
 tmpl = '''
-<div if="config.branch">
+<div if="config && config.branch">
   branch: {{config.branch}}<br/>
   commit: <a target="_blank" href="{{data.repo_url}}">{{config.real_revision}}</a>
 </div>
@@ -24,6 +24,7 @@ class JobDetailsComponent
 
   build: (ctx, meta) ->
     @config = ctx.eval meta.attrs.config
+    return unless @config
     parser = @findParser(@config)
     return unless parser
     @data = parser.extract(@config)

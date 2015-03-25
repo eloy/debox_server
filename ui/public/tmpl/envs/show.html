@@ -15,8 +15,8 @@
       <a href="/apps/{{app}}/envs/{{env.name}}/logs/{{overview.last_job.id}}">
         {{moment(overview.last_job.start_time).format('LLL')}}
       </a>
+      <job-details config="overview.last_job.config"></job-details>
     </div>
-    <job-details config="overview.last_job.config"></job-details>
   </div>
 
   <div class="col-md-6">
