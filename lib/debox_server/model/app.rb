@@ -22,4 +22,12 @@ class App < ActiveRecord::Base
     end
     return app
   end
+
+  def to_jbuilder
+    Jbuilder.new do |json|
+      json.(self, :id, :name)
+      json.envs self.recipes.map { |e| e.to_jbuilder.attributes! }
+    end
+  end
+
 end

@@ -40,6 +40,7 @@ module DeboxServer
     mount DeboxServer::API::V1::SshKeys
     mount DeboxServer::API::V1::ApiKeys
     mount DeboxServer::API::V1::ACL
+    mount DeboxServer::API::V1::Sessions
   end
 
 end

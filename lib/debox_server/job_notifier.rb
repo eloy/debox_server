@@ -10,7 +10,7 @@ module DeboxServer
 
     def send_notification(notification, job, opt={ })
       log.info "Notification: #{notification}"
-      msg = {notification: notification, job: job}
+      msg = {notification: notification, job: job.to_jbuilder.attributes!}
       msg.merge! opt
       channel.push msg.to_json
     end

@@ -5,6 +5,7 @@ module DeboxServer
       class Users < Grape::API
 
         version 'v1'
+        format :json
 
         before do
           authenticate!
@@ -13,7 +14,14 @@ module DeboxServer
 
         resource :users do
           get do
-            User.all.map(&:email).to_json
+            User.order("id asc").map do |user|
+              user.to_jbuilder.attributes!
+            end
+          end
+
+          get "/:id" do
+            user = User.find params[:id]
+            user.to_jbuilder(verbose: true).attributes!
           end
 
           post '/create' do
@@ -21,6 +29,16 @@ module DeboxServer
             error!("Can't create user", 400) unless user
             "ok"
           end
+
+          # Update
+          put '/:id' do
+            user = User.find params[:id]
+            unless user.update_attributes extract_params :user, [:password, :admin]
+              error!("Can't update user", 400)
+            end
+            user.to_jbuilder(verbose: true).attributes!
+          end
+
 
           # TODO validate params
           delete '/destroy' do

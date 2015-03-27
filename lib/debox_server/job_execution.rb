@@ -8,11 +8,22 @@ module DeboxServer
   module JobExecution
 
     def start
+      @thread = Thread.current
       execute_task
       update_job_status
       unsubscribe_all
       trigger_on_finish
       return self
+    end
+
+    # TODO: Refactor?
+    def kill!
+      @thread.kill
+      self.error = "Stoped by user."
+      update_job_status
+      unsubscribe_all
+      trigger_on_finish
+      @queue_callback.call(self)
     end
 
     # Current job output
@@ -49,17 +60,35 @@ module DeboxServer
       on_finish_callbacks << block
     end
 
-    private
+
+    protected
+
+    def set_started!
+      ActiveRecord::Base.connection_pool.with_connection {
+        self.update_attributes start_time: DateTime.now, config: extract_capistrano_config
+      }
+    end
+
+    # Return a hash with configs from capistrano
+    def extract_capistrano_config
+      config = {}
+      config_keys = [:repository, :branch, :real_revision]
+      config_keys.each do |key|
+        config[key] = self.capistrano[key]
+      end
+      return config
+    end
 
     # Load the recipe and execute the task
     def execute_task
       @running = true
-      self.start_time = DateTime.now
+
       begin
         capistrano.load_paths << File.join(Config.debox_root, 'capistrano')
 
-        # Load the recipe content
+        # Load the recipe content and extract config to make it available to status
         capistrano.load string: self.recipe.content
+        set_started!
 
         DeboxServer.log.info "Deploying from git: #{capistrano[:repository]} #{capistrano[:branch]}, #{capistrano[:real_revision]}"
         result = capistrano.find_and_execute_task(task, before: :start, after: :finish)
@@ -74,12 +103,12 @@ module DeboxServer
       end
     end
 
+
     def update_job_status
       self.end_time = DateTime.now
       self.log = stdout.buffer || "** EMPTY BUFFER **"
       self.success = stdout.success || false
       self.error = stdout.error
-      self.config = { } #capistrano.to_json
       # Save and quickly return the connection to the pool
       ActiveRecord::Base.connection_pool.with_connection { self.save }
     end

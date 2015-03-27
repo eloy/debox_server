@@ -29,6 +29,11 @@ module DeboxServer
           detailed_apps_list
         end
 
+        desc "Show app status"
+        get "/apps/:app" do
+          current_app.to_jbuilder.attributes!
+        end
+
       end
     end
   end

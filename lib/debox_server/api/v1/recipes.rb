@@ -5,24 +5,37 @@ module DeboxServer
       class Recipes < Grape::API
 
         version 'v1'
+        format :json
 
         before do
           authenticate!
           require_admin
         end
 
+        desc "Show env status"
+        get "/apps/:app/envs/:env" do
+          current_env.to_jbuilder.attributes!
+        end
+
+        desc "Show tasks"
+        get "/apps/:app/envs/:env/tasks" do
+          current_env.tasks
+        end
+
+
         resource :recipes do
 
           desc "List all the recipes configured for the app"
           get "/:app" do
             app = App.find_by_name! params[:app]
-            app.recipe_names.to_json
+            app.recipe_names
           end
 
           desc "Show a recipe"
           get "/:app/:env" do
             recipe = recipe_content params[:app], params[:env]
             error!("Invalid recipe", 400) unless recipe
+            content_type 'text/plain'
             recipe
           end
 

@@ -1,0 +1,27 @@
+<h1 class="page-headers" id="env-header">
+  <a href="/apps/{{app}}">{{app}}</a> - {{env}}
+  <small>
+    <env-state class="env-state" env="{{env}}" app="{{app}}"></env-state>
+  </small>
+</h1>
+
+<env-navbar></env-navbar>
+<!-- Read Mode -->
+<div unless="editMode">
+
+  <pre>{{recipe}}</pre>
+
+  <button class="btn btn-success" click="edit()">Edit</button>
+</div>
+
+<!-- Edit Mode -->
+<div if="editMode">
+  <form role="form">
+      <div class="form-group">
+        <textarea class="form-control" rows="20" model="recipe"></textarea>
+      </div>
+  </form>
+
+  <button class="btn btn-default" click="close()">Close</button>
+  <button class="btn btn-success" click="save()">Save</button>
+</div>

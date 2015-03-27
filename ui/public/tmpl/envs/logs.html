@@ -1,0 +1,24 @@
+<h1 class="page-headers" id="env-header">
+  <a href="/apps/{{app}}">{{app}}</a> - {{env}}
+  <small>
+    <env-state class="env-state" env="{{env}}" app="{{app}}"></env-state>
+  </small>
+</h1>
+
+
+<env-navbar></env-navbar>
+<div id="logs" repeat="log in logs">
+  <div class="log {{log.success ? 'log-success' : 'log-failed'}}">
+    <h4>
+      {{log.task}}
+      <small>
+        <a href="/apps/{{app}}/envs/{{env}}/logs/{{log.id}}">{{moment(log.created_at).format('LLL')}}</a>
+      </small>
+    </h4>
+
+    <job-details config="log.config" if="log.success"></job-details>
+
+    <span class="text-danger" unless="log.success">{{log.error}}</span>
+
+  </div>
+</div>

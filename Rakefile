@@ -14,6 +14,7 @@ require "bundler/gem_tasks"
 begin
   require 'debox_server'
   require 'debox_server/rake/tasks'
-rescue Exception
+rescue Exception => ex
+  puts ex
   puts "debox_server gem is not installed globaly. Specifics tasks will not be availables."
 end
