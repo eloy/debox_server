@@ -12,12 +12,6 @@ module DeboxServer
           require_admin
         end
 
-        desc "Show app status"
-        get "/apps/:app" do
-          current_app.to_jbuilder.attributes!
-        end
-
-
         desc "Show env status"
         get "/apps/:app/envs/:env" do
           current_env.to_jbuilder.attributes!
