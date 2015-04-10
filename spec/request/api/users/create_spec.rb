@@ -17,7 +17,8 @@ describe '/v1/users/create' do
     login_as_admin
     post '/v1/users/create', user: 'new@indeos.es', password: 'secret'
     last_response.status.should eq 201
-    last_response.body.should eq 'ok'
     User.find_by_email('new@indeos.es').should_not be_nil
+    resp = JSON.parse last_response.body
+    expect(resp['email']).to eq 'new@indeos.es'
   end
 end

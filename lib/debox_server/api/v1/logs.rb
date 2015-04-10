@@ -5,7 +5,6 @@ module DeboxServer
       class Logs < Grape::API
 
         version 'v1'
-        format :json
 
         before do
           authenticate!
@@ -35,10 +34,12 @@ module DeboxServer
         resource :logs do
 
           get "/:app" do
+            content_type 'application/json'
             get_logs_helper(current_env)
           end
 
           get "/:app/:env" do
+            content_type 'application/json'
             get_logs_helper(current_env)
           end
         end
@@ -46,10 +47,12 @@ module DeboxServer
 
         resource :log do
           get "/:app/:env" do
+            content_type 'text/plain'
             show_log current_env, params[:job_id]
           end
 
           get "/:app" do
+            content_type 'text/plain'
             show_log current_env, params[:job_id]
           end
         end

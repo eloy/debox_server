@@ -19,6 +19,6 @@ describe '/v1/users' do
 
     get '/v1/users'
     last_response.should be_ok
-    last_response.body.should eq [user.email].to_json
+    last_response.body.should eq [user.to_jbuilder.attributes!].to_json
   end
 end

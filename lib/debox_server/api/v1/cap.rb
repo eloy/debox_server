@@ -20,6 +20,10 @@ module DeboxServer
           end
         end
 
+
+        # cap
+        #----------------------------------------------------------------------
+
         desc "Run a capistrano task for a on a given app if only one env configured"
         get "/cap/:app" do
           run_cap_task(current_app, current_env, params[:task] || 'deploy')
@@ -29,6 +33,15 @@ module DeboxServer
         get "/cap/:app/:env" do
           run_cap_task(current_app, current_env, params[:task] || 'deploy')
         end
+
+        # tasks
+        #----------------------------------------------------------------------
+
+        desc "Show tasks"
+        get "/apps/:app/envs/:env/tasks" do
+          current_env.tasks
+        end
+
 
       end
     end

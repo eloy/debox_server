@@ -27,7 +27,7 @@ module DeboxServer
           post '/create' do
             user = add_user params[:user], params[:password]
             error!("Can't create user", 400) unless user
-            "ok"
+            user.to_jbuilder.attributes!
           end
 
           # Update
