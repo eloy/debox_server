@@ -54,7 +54,7 @@ module  DeboxServerBootstrap
   end
 
   def create_server_dir_layout
-    ['capistrano', 'config', 'templates', 'bin', 'upstart'].each do |dir|
+    ['tmp', 'capistrano', 'config', 'templates', 'bin', 'upstart'].each do |dir|
       target_dir = File.join(debox_root, dir)
       Dir.mkdir target_dir
       say "new dir: #{target_dir}"
