@@ -16,7 +16,7 @@ module DeboxServer
     end
 
     def puts(msg)
-      @buffer += msg
+      @buffer += msg.encode(Encoding.find('UTF-8'), {invalid: :replace, undef: :replace, replace: ''})
       channel.push msg
       DeboxServer::log.debug msg
     end
